@@ -30,18 +30,45 @@ async function compareSS(score) {
 
             if (snipperScore < baseScore) {
                 console.log(`[SS] Snipe Alert : ${playerName} snipe ${sniper.sniper.name} on ${name} | ${difficulty}`)
-                const newScore = await prisma.score.create({
-                    data: {
-                        name: name,
+
+                let score = await prisma.score.findFirst({
+                    where: {
                         playerId: playerId,
                         snipeId: sniper.id,
                         hash: hash,
                         leaderboard: "scoresaber",
-                        score: baseScore,
                         difficulty: difficulty,
                         gamemode: gamemode,
+                    },
+                    select: {
+                        id: true
                     }
                 })
+
+                if (score) {
+                    const updateScore = await prisma.score.update({
+                        where: {
+                            id: score.id
+                        },
+                        data: {
+                            score: baseScore
+                        }
+                    })
+
+                } else {
+                    const newScore = await prisma.score.create({
+                        data: {
+                            name: name,
+                            playerId: playerId,
+                            snipeId: sniper.id,
+                            hash: hash,
+                            leaderboard: "scoresaber",
+                            score: baseScore,
+                            difficulty: difficulty,
+                            gamemode: gamemode,
+                        }
+                    })
+                }
             }
         }
     }/* else {
@@ -104,18 +131,45 @@ async function compareBL(score) {
 
             if (snipperScore < baseScore) {
                 console.log(`[BL] Snipe Alert : ${sniperInfo.name} snipe ${sniper.sniper.name} on ${name} | ${difficulty}`)
-                const newScore = await prisma.score.create({
-                    data: {
-                        name: name,
+
+                let score = await prisma.score.findFirst({
+                    where: {
                         playerId: playerId,
                         snipeId: sniper.id,
                         hash: hash,
                         leaderboard: "beatleader",
-                        score: baseScore,
                         difficulty: difficulty,
                         gamemode: gamemode,
+                    },
+                    select: {
+                        id: true
                     }
                 })
+
+                if (score) {
+                    const updateScore = await prisma.score.update({
+                        where: {
+                            id: score.id
+                        },
+                        data: {
+                            score: baseScore
+                        }
+                    })
+
+                } else {
+                    const newScore = await prisma.score.create({
+                        data: {
+                            name: name,
+                            playerId: playerId,
+                            snipeId: sniper.id,
+                            hash: hash,
+                            leaderboard: "beatleader",
+                            score: baseScore,
+                            difficulty: difficulty,
+                            gamemode: gamemode,
+                        }
+                    })
+                }
             }
         }
     }/* else {
