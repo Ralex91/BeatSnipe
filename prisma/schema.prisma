@@ -1,0 +1,36 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Player {
+    id        String  @id @unique
+    discordId String?
+    Snipe     Snipe[]
+}
+
+model Snipe {
+    id          String  @id @unique @default(uuid())
+    sniperId    String
+    playerId    String
+    leaderboard String
+    sniper      Player  @relation(fields: [sniperId], references: [id])
+    scores      Score[]
+}
+
+model Score {
+    id          Int    @id @unique @default(autoincrement())
+    name        String
+    playerId    String
+    snipeId     String
+    hash        String
+    leaderboard String
+    score       Int
+    difficulty  String
+    gamemode    String
+    snipe       Snipe  @relation(fields: [snipeId], references: [id])
+}
