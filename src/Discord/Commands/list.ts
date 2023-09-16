@@ -25,7 +25,7 @@ export default {
         })
 
         if (!getSniperId) {
-            await interaction.editReply(SmallEmbed("❌ ┃ No account link! Link your account with /link"))
+            await interaction.editReply(SmallEmbed("❌ ┃ No account link! Link your account with </link:1151622228639760465>"))
             return false
         }
 
