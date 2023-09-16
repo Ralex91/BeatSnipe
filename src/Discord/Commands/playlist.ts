@@ -36,7 +36,7 @@ export default {
         let leaderboard = interaction.options.getString('leaderboard')
 
         if (cooldown.has(discordId)) {
-            await interaction.editReply(SmallEmbed("⏱ ┃ You have to wait 2 minutes before you can use the playlist commands again"))
+            await interaction.editReply(SmallEmbed("⏱ ┃ You have to wait 20 seconde before you can use the playlist commands again"))
             return false
         }
 
@@ -98,6 +98,6 @@ export default {
         cooldown.add(interaction.member.id);
         setTimeout(function () {
             cooldown.delete(discordId);
-        }, 120000);
+        }, 20000);
     }
 }

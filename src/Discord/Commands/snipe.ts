@@ -84,7 +84,12 @@ export default {
             case 'add': {
 
                 if (cooldownAdd.has(discordId)) {
-                    await interaction.editReply(SmallEmbed("⏱ ┃ You have to wait 10 minutes before you can use this command again"))
+                    await interaction.editReply(SmallEmbed("⏱ ┃ You have to wait 1 minutes before you can use this command again"))
+                    return false
+                }
+
+                if (playerId === discordId) {
+                    await interaction.editReply(SmallEmbed("❌ ┃ You can't snipe yourself 🧠"))
                     return false
                 }
 
@@ -99,8 +104,8 @@ export default {
                     }
                 })
 
-                if (snipeCount > 2) {
-                    await interaction.editReply(SmallEmbed("❌ ┃ You have reached your snipe limit of 2 players at the same time"))
+                if (snipeCount > 5) {
+                    await interaction.editReply(SmallEmbed("❌ ┃ You have reached your snipe limit of 5 players at the same time"))
                     return false
                 }
 
@@ -130,7 +135,7 @@ export default {
                 cooldownAdd.add(interaction.member.id);
                 setTimeout(function () {
                     cooldownAdd.delete(discordId);
-                }, 600000);
+                }, 60000);
 
                 break
             }
@@ -138,7 +143,7 @@ export default {
             case 'remove': {
 
                 if (cooldownRemove.has(discordId)) {
-                    await interaction.editReply(SmallEmbed("❌ ┃ You have to wait 10 minutes before you can use this command again"))
+                    await interaction.editReply(SmallEmbed("❌ ┃ You have to wait 1 minutes before you can use this command again"))
                     return false
                 }
 
@@ -153,7 +158,7 @@ export default {
                 cooldownRemove.add(interaction.member.id);
                 setTimeout(function () {
                     cooldownRemove.delete(discordId);
-                }, 600000);
+                }, 60000);
 
                 break
             }
