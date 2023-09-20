@@ -22,52 +22,55 @@ async function compareSS(score) {
 
     if (sniper && sniper.leaderboard.includes("scoresaber")) {
 
-        let sniperInfo: playerInfo | boolean = await Scoresaber.getplayerInfo(playerId)
-        let snipperScore: number | boolean = await Scoresaber.getPlayerScoreMap(playerName, hash, difficulty, gamemode)
+        let sniperInfo: playerInfo | boolean = await Scoresaber.getplayerInfo(sniper.sniperId)
 
-        if (sniperInfo && snipperScore) {
-            console.log(`[SS] : ${snipperScore} < ${baseScore}`)
+        if (sniperInfo) {
+            let snipperScore: number | boolean = await Scoresaber.getPlayerScoreMap(sniperInfo.name, hash, difficulty, gamemode)
 
-            if (snipperScore < baseScore) {
-                console.log(`[SS] Snipe Alert : ${playerName} snipe ${sniper.sniper.name} on ${name} | ${difficulty}`)
+            if (sniperInfo && snipperScore) {
+                console.log(`[SS] : ${snipperScore} vs ${baseScore}`)
 
-                let score = await prisma.score.findFirst({
-                    where: {
-                        playerId: playerId,
-                        snipeId: sniper.id,
-                        hash: hash,
-                        leaderboard: "scoresaber",
-                        difficulty: difficulty,
-                        gamemode: gamemode,
-                    },
-                    select: {
-                        id: true
-                    }
-                })
+                if (snipperScore < baseScore) {
+                    console.log(`[SS] Snipe Alert : ${playerName} snipe ${sniperInfo.name} on ${name} | ${difficulty}`)
 
-                if (score) {
-                    const updateScore = await prisma.score.update({
+                    let score = await prisma.score.findFirst({
                         where: {
-                            id: score.id
-                        },
-                        data: {
-                            score: baseScore
-                        }
-                    })
-
-                } else {
-                    const newScore = await prisma.score.create({
-                        data: {
-                            name: name,
                             playerId: playerId,
                             snipeId: sniper.id,
                             hash: hash,
                             leaderboard: "scoresaber",
-                            score: baseScore,
                             difficulty: difficulty,
                             gamemode: gamemode,
+                        },
+                        select: {
+                            id: true
                         }
                     })
+
+                    if (score) {
+                        const updateScore = await prisma.score.update({
+                            where: {
+                                id: score.id
+                            },
+                            data: {
+                                score: baseScore
+                            }
+                        })
+
+                    } else {
+                        const newScore = await prisma.score.create({
+                            data: {
+                                name: name,
+                                playerId: playerId,
+                                snipeId: sniper.id,
+                                hash: hash,
+                                leaderboard: "scoresaber",
+                                score: baseScore,
+                                difficulty: difficulty,
+                                gamemode: gamemode,
+                            }
+                        })
+                    }
                 }
             }
         }
@@ -93,9 +96,9 @@ async function compareSS(score) {
     });
 
     if (getSnipperScore) {
-        console.log(`${getSnipperScore.score} > ${baseScore}`)
-
         if (getSnipperScore.score < baseScore) {
+            console.log(`${getSnipperScore.score} < ${baseScore}`)
+
             const deleteScore = await prisma.score.delete({
                 where: {
                     id: getSnipperScore.id
@@ -123,14 +126,14 @@ async function compareBL(score) {
 
     if (sniper && sniper.leaderboard.includes("beatleader")) {
 
-        let sniperInfo: playerInfo | boolean = await Beatleader.getplayerInfo(playerId)
-        let snipperScore: number | boolean = await Beatleader.getPlayerScoreMap(playerId, hash, difficulty, gamemode)
+        let sniperInfo: playerInfo | boolean = await Beatleader.getplayerInfo(sniper.sniperId)
+        let snipperScore: number | boolean = await Beatleader.getPlayerScoreMap(sniper.sniperId, hash, difficulty, gamemode)
 
         if (sniperInfo && snipperScore) {
-            console.log(`[BL] : ${snipperScore} < ${baseScore}`)
+            console.log(`[BL] : ${snipperScore} vs ${baseScore}`)
 
             if (snipperScore < baseScore) {
-                console.log(`[BL] Snipe Alert : ${sniperInfo.name} snipe ${sniper.sniper.name} on ${name} | ${difficulty}`)
+                console.log(`[BL] Snipe Alert : ${playerName} snipe ${sniperInfo.name} on ${name} | ${difficulty}`)
 
                 let score = await prisma.score.findFirst({
                     where: {
@@ -194,9 +197,9 @@ async function compareBL(score) {
     });
 
     if (getSnipperScore) {
-        console.log(`${getSnipperScore.score} > ${baseScore}`)
-
         if (getSnipperScore.score < baseScore) {
+            console.log(`${getSnipperScore.score} < ${baseScore}`)
+
             const deleteScore = await prisma.score.delete({
                 where: {
                     id: getSnipperScore.id

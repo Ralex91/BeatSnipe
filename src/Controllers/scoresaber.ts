@@ -58,11 +58,11 @@ async function getPlayerScoreMap(playerName: string, hash: string, difficulty: s
     let getScore: any = await fetch({
         url: `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores?difficulty=${SSDifficultyToNumber(difficulty)}&search=${playerName}&gameMode=Solo${gamemode}`,
         method: "GET",
-        parse: "string"
+        parse: "json"
     })
 
     if (getScore.statusCode === 200) {
-        return getScore.body.modifiedScore
+        return getScore.body.scores[0].modifiedScore
     } else {
         return false
     }
