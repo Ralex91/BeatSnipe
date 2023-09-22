@@ -9,7 +9,4 @@
   <p align="center">I'm a Discord bot that lets you track the scores of players you want to snipe to generate a playlist that updates automatically 
     <br />
   </p>
-  <a href="https://beatsnipe.ralex.app/discord">
-    <h3 align="center">JOIN DISCORD SERVER</h3>
-  <a/>
 </p>
