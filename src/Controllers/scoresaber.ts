@@ -1,4 +1,3 @@
-import { async } from 'node-stream-zip'
 import fetch from 'phin'
 
 let SSDifficultyToText = (difficulty: Number) => {
