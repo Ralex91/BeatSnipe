@@ -4,7 +4,7 @@ import Scoresaber from './scoresaber';
 const prisma = new PrismaClient();
 
 async function add(sniperId: string, playerId: string, leaderboard) {
-    let createSnipe = await prisma.snipe.create({
+    const createSnipe = await prisma.snipe.create({
         data: {
             sniperId: sniperId,
             playerId: playerId,
@@ -31,7 +31,7 @@ async function add(sniperId: string, playerId: string, leaderboard) {
         }
     }
 
-    let addScore = await prisma.score.createMany({
+    const addScore = await prisma.score.createMany({
         data: scoresToSnipe,
         skipDuplicates: true
     })

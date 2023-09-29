@@ -1,14 +1,14 @@
 import fetch from 'phin'
 
 async function getplayerInfo(playerId: string) {
-    let playerData: any = await fetch({
+    const playerData: any = await fetch({
         url: `https://api.beatleader.xyz/player/${playerId}?stats=false&keepOriginalId=false`,
         method: "GET",
         parse: "string"
     })
 
     if (playerData.statusCode === 200) {
-        let data = JSON.parse(playerData.body)
+        const data = JSON.parse(playerData.body)
         return {
             name: data.name,
             id: data.id,
@@ -25,7 +25,7 @@ async function getplayerInfo(playerId: string) {
 }
 
 async function getPlayerScoreMap(playerId: string, hash: string, difficulty: string, gamemode: string) {
-    let getScore: any = await fetch({
+    const getScore: any = await fetch({
         url: `https://api.beatleader.xyz/player/${playerId}/scorevalue/${hash}/${difficulty}/${gamemode}`,
         method: "GET",
         parse: "string"

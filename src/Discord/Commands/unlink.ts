@@ -1,5 +1,4 @@
-import { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } from 'discord.js'
-import playlist from '../../Utils/playlist.js'
+import { SlashCommandBuilder } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient();

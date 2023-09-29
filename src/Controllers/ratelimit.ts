@@ -9,7 +9,7 @@ export const rateLimit = (time: number, max: number) => {
             response.status(429).json({
                 'code': 429,
                 'message': 'Rate limited, please try again later',
-            });
+            })
         }
     })
 }

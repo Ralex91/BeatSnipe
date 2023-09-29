@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
 import Scoresaber from '../../Controllers/scoresaber.js';
 import Beatleader from '../../Controllers/beatleader.js';
@@ -20,23 +20,23 @@ export default {
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true })
 
-        let playerId = interaction.options.getString('id')
-        let discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
+        const playerId = interaction.options.getString('id')
+        const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
 
-        let isExist = await prisma.player.count({
+        const isExist = await prisma.player.count({
             where: {
                 discordId: discordId
             }
         })
 
         if (!isExist) {
-            let isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
+            const isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
             if (!isPlayerExistSS) {
                 await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Scoresaber"))
                 return false
             }
 
-            let isPlayerExistBL = await Beatleader.getplayerInfo(playerId)
+            const isPlayerExistBL = await Beatleader.getplayerInfo(playerId)
             if (!isPlayerExistBL) {
                 await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Beatleader"))
                 return false
@@ -47,7 +47,7 @@ export default {
                 return false
             }
 
-            let addPlayer = await prisma.player.create({
+            const addPlayer = await prisma.player.create({
                 data: {
                     id: playerId,
                     discordId: interaction.member.id

@@ -21,8 +21,5 @@ client.commands = new Collection()
 
 Commands(client)
 Events(client)
-//require("./Handlers/Events")(client)
-//require("./Handlers/Commands")(client)
 
-
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN)

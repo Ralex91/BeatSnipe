@@ -59,7 +59,7 @@ export default {
         };
 
         for (const player of getAllSnipe) {
-            let playerInfo
+            let playerInfo: playerInfo | false
 
             if (player.leaderboard.includes("scoresaber")) {
                 playerInfo = await Scoresaber.getplayerInfo(player.playerId)
@@ -67,10 +67,13 @@ export default {
                 playerInfo = await Beatleader.getplayerInfo(player.playerId)
             }
 
-            snipeListEmbed.fields.push({ name: `👤 ┃ ${playerInfo.name}`, value: "🔹 `" + player.playerId + "`" })
+            if (playerInfo) {
+                snipeListEmbed.fields.push({ name: `👤 ┃ ${playerInfo.name}`, value: "🔹 `" + player.playerId + "`" })
+            } else {
+                console.log(`Player not found on API: ${player.playerId}`)
+            }
         }
 
         await interaction.editReply({ embeds: [snipeListEmbed] })
-
     }
 }

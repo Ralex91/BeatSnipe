@@ -1,4 +1,4 @@
-import { EmbedBuilder, SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
 import Snipe from '../../Controllers/snipe'
 import Scoresaber from '../../Controllers/scoresaber'
@@ -132,10 +132,10 @@ export default {
 
                 await interaction.editReply(SmallEmbed("✅ ┃ The player has been added to your list!"))
 
-                cooldownAdd.add(interaction.member.id);
+                cooldownAdd.add(interaction.member.id)
                 setTimeout(function () {
-                    cooldownAdd.delete(discordId);
-                }, 60000);
+                    cooldownAdd.delete(discordId)
+                }, 60000)
 
                 break
             }
@@ -148,17 +148,17 @@ export default {
                 }
 
                 if (!snipeInfo) {
-                    await interaction.editReply(("❌ ┃ You didn't snipe at this player"))
+                    await interaction.editReply(SmallEmbed("❌ ┃ You didn't snipe at this player"))
                     return false
                 }
 
                 await Snipe.remove(snipeInfo.id)
                 await interaction.editReply(SmallEmbed("✅ ┃ The player has been removed from your list"))
 
-                cooldownRemove.add(interaction.member.id);
+                cooldownRemove.add(interaction.member.id)
                 setTimeout(function () {
-                    cooldownRemove.delete(discordId);
-                }, 60000);
+                    cooldownRemove.delete(discordId)
+                }, 60000)
 
                 break
             }

@@ -1,6 +1,6 @@
 import fetch from 'phin'
 
-let SSDifficultyToText = (difficulty: Number) => {
+const SSDifficultyToText = (difficulty: Number) => {
     switch (difficulty) {
         case 1:
             return "Easy"
@@ -15,7 +15,7 @@ let SSDifficultyToText = (difficulty: Number) => {
     }
 }
 
-let SSDifficultyToNumber = (difficulty: string) => {
+const SSDifficultyToNumber = (difficulty: string) => {
     switch (difficulty) {
         case "Easy":
             return 1
@@ -31,7 +31,7 @@ let SSDifficultyToNumber = (difficulty: string) => {
 }
 
 async function getplayerInfo(playerId: string) {
-    let playerData: any = await fetch({
+    const playerData: any = await fetch({
         url: `https://scoresaber.com/api/player/${playerId}/basic/`,
         method: "GET",
         parse: "json"
@@ -54,7 +54,7 @@ async function getplayerInfo(playerId: string) {
 }
 
 async function getPlayerScoreMap(playerName: string, hash: string, difficulty: string, gamemode: string) {
-    let getScore: any = await fetch({
+    const getScore: any = await fetch({
         url: `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores?difficulty=${SSDifficultyToNumber(difficulty)}&search=${playerName}&gameMode=Solo${gamemode}`,
         method: "GET",
         parse: "json"

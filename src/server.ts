@@ -24,7 +24,6 @@ app.get('/discord', function (req: Request, res: Response) {
     res.redirect(process.env.DISCORD_INVITE)
 });
 
-/* Error 404 */
 app.get('*', function (req: Request, res: Response) {
     res.json({
         code: 404,
@@ -33,5 +32,5 @@ app.get('*', function (req: Request, res: Response) {
 });
 
 app.listen(process.env.WEB_PORT, () => {
-    console.log(`ScoreSniper listening on port ${process.env.WEB_PORT}`);
+    console.log(`BeatSnipe listening on port ${process.env.WEB_PORT}`);
 });

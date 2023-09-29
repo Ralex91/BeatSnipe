@@ -1,19 +1,13 @@
 import fetch from "phin"
 import { PrismaClient } from '@prisma/client'
+import Scoresaber from "../Controllers/scoresaber";
+import Beatleader from "../Controllers/beatleader";
 
 const prisma = new PrismaClient();
 
-interface song {
-    hash: number
-    difficulty: string
-    gamemode: string
-}
-
-// Playlist structure
-
 export default async function (leaderboard: string, snippeId: string) {
 
-    let snipeInfo = await prisma.snipe.findFirst({
+    const snipeInfo = await prisma.snipe.findFirst({
         where: {
             id: snippeId,
         },
@@ -31,42 +25,25 @@ export default async function (leaderboard: string, snippeId: string) {
 
     if (!snipeInfo) return { code: 404, message: "Playlist not found" }
 
-    let leaderboards = snipeInfo.leaderboard.split(",")
+    const leaderboards = snipeInfo.leaderboard.split(",")
     let playerInfo: any
 
     if (leaderboards.includes("scoresaber")) {
-        let getplayerInfo: any = await fetch({
-            url: `https://scoresaber.com/api/player/${snipeInfo.playerId}/basic/`,
-            method: "GET",
-            parse: "json"
-        })
-
-        playerInfo = {
-            name: getplayerInfo.body.name,
-            avatar: getplayerInfo.body.profilePicture
-        }
-
+        playerInfo = Scoresaber.getplayerInfo(snipeInfo.playerId)
     }
 
     if (leaderboards.includes("beatleader")) {
-        let getplayerInfo: any = await fetch({
-            url: `https://api.beatleader.xyz/player/${snipeInfo.playerId}?stats=false&keepOriginalId=false`,
-            method: "GET",
-            parse: "json"
-        })
-
-        playerInfo = {
-            name: getplayerInfo.body.name,
-            avatar: getplayerInfo.body.avatar
-        }
+        playerInfo = Beatleader.getplayerInfo(snipeInfo.playerId)
     }
 
-    let playerImage = await fetch({
+    if (!playerInfo) return { code: 404, message: "Player not found" }
+
+    const playerImage = await fetch({
         url: playerInfo.avatar,
         method: "GET",
     })
 
-    let playlist: any = {
+    const playlist: playlist = {
         "AllowDuplicates": false,
         "playlistTitle": `Snippe playlist ${leaderboard} of ${playerInfo.name}`,
         "playlistAuthor": "Score Snipper",
