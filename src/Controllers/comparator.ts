@@ -4,10 +4,17 @@ import Scoresaber from './scoresaber';
 
 const prisma = new PrismaClient();
 
-async function compareSS(score) {
+export default async function (score, leaderboard: string) {
+    const prefix = leaderboard === "scoresaber" ? "SS" : leaderboard === "beatleader" ? "BL" : false;
+
+    if (!prefix) {
+        console.log("Invaild leaderboard")
+        return false
+    }
+
     const { hash, name, difficulty, gamemode, baseScore, playerId, playerName } = score
 
-    const sniper: any = await prisma.snipe.findFirst({
+    const sniper = await prisma.snipe.findFirst({
         where: {
             playerId: playerId
         },
@@ -17,27 +24,38 @@ async function compareSS(score) {
             sniperId: true,
             leaderboard: true
         }
-    });
+    })
 
-    if (sniper && sniper.leaderboard.includes("scoresaber")) {
+    if (sniper) {
+        let sniperInfo: playerInfo | false
 
-        const sniperInfo: playerInfo | boolean = await Scoresaber.getplayerInfo(sniper.sniperId)
+        if (leaderboard === "scoresaber") {
+            sniperInfo = await Scoresaber.getplayerInfo(sniper.sniperId)
+        } else if (leaderboard === "beatleader") {
+            sniperInfo = await Beatleader.getplayerInfo(sniper.sniperId)
+        }
 
         if (sniperInfo) {
-            const snipperScore: number | boolean = await Scoresaber.getPlayerScoreMap(sniperInfo.name, hash, difficulty, gamemode)
+            let snipperScore: number | false
+
+            if (leaderboard === "scoresaber") {
+                sniperInfo = await Scoresaber.getPlayerScoreMap(sniperInfo.name, hash, difficulty, gamemode)
+            } else if (leaderboard === "beatleader") {
+                sniperInfo = await Beatleader.getPlayerScoreMap(sniper.sniperId, hash, difficulty, gamemode)
+            }
 
             if (sniperInfo && snipperScore) {
-                console.log(`[SS] : ${snipperScore} vs ${baseScore}`)
+                console.log(`[${prefix}] : ${snipperScore} vs ${baseScore}`)
 
                 if (snipperScore < baseScore) {
-                    console.log(`[SS] Snipe Alert : ${playerName} snipe ${sniperInfo.name} on ${name} | ${difficulty}`)
+                    console.log(`[${prefix}] Snipe Alert : ${playerName} snipe ${sniperInfo.name} on ${name} | ${difficulty}`)
 
                     const score = await prisma.score.findFirst({
                         where: {
                             playerId: playerId,
                             snipeId: sniper.id,
                             hash: hash,
-                            leaderboard: "scoresaber",
+                            leaderboard: leaderboard,
                             difficulty: difficulty,
                             gamemode: gamemode,
                         },
@@ -47,12 +65,22 @@ async function compareSS(score) {
                     })
 
                     if (score) {
-                        const updateScore = await prisma.score.update({
+                        const deleteOldScore = await prisma.score.delete({
                             where: {
                                 id: score.id
-                            },
+                            }
+                        })
+
+                        const createNewScore = await prisma.score.create({
                             data: {
-                                score: baseScore
+                                name: name,
+                                playerId: playerId,
+                                snipeId: sniper.id,
+                                hash: hash,
+                                leaderboard: leaderboard,
+                                score: baseScore,
+                                difficulty: difficulty,
+                                gamemode: gamemode,
                             }
                         })
 
@@ -63,7 +91,7 @@ async function compareSS(score) {
                                 playerId: playerId,
                                 snipeId: sniper.id,
                                 hash: hash,
-                                leaderboard: "scoresaber",
+                                leaderboard: leaderboard,
                                 score: baseScore,
                                 difficulty: difficulty,
                                 gamemode: gamemode,
@@ -74,15 +102,15 @@ async function compareSS(score) {
             }
         }
     }/* else {
-        console.log(`[SS] : No snipper found for: ${playerName}`)
+        console.log(`[${prefix}] : No snipper found for: ${playerName}`)
     }*/
 
-    const getSnipperScore = await prisma.score.findFirst({
+    const snipePlayerScore = await prisma.score.findFirst({
         where: {
             hash: hash,
             difficulty: difficulty,
             gamemode: gamemode,
-            leaderboard: "scoresaber",
+            leaderboard: leaderboard,
             snipe: {
                 sniperId: playerId
             }
@@ -92,123 +120,21 @@ async function compareSS(score) {
             score: true,
             snipe: true
         }
-    });
-
-    if (getSnipperScore) {
-        if (getSnipperScore.score < baseScore) {
-            console.log(`${getSnipperScore.score} < ${baseScore}`)
-
-            const deleteScore = await prisma.score.delete({
-                where: {
-                    id: getSnipperScore.id
-                }
-            })
-        }
-    }
-
-}
-
-async function compareBL(score) {
-    const { hash, name, difficulty, gamemode, baseScore, playerId, playerName } = score
-
-    const sniper: any = await prisma.snipe.findFirst({
-        where: {
-            playerId: playerId,
-            leaderboard: "beatleader"
-        },
-        select: {
-            id: true,
-            playerId: true,
-            sniperId: true,
-        }
-    });
-
-    if (sniper && sniper.leaderboard.includes("beatleader")) {
-
-        const sniperInfo: playerInfo | boolean = await Beatleader.getplayerInfo(sniper.sniperId)
-        const snipperScore: number | boolean = await Beatleader.getPlayerScoreMap(sniper.sniperId, hash, difficulty, gamemode)
-
-        if (sniperInfo && snipperScore) {
-            console.log(`[BL] : ${snipperScore} vs ${baseScore}`)
-
-            if (snipperScore < baseScore) {
-                console.log(`[BL] Snipe Alert : ${playerName} snipe ${sniperInfo.name} on ${name} | ${difficulty}`)
-
-                const score = await prisma.score.findFirst({
-                    where: {
-                        playerId: playerId,
-                        snipeId: sniper.id,
-                        hash: hash,
-                        leaderboard: "beatleader",
-                        difficulty: difficulty,
-                        gamemode: gamemode,
-                    },
-                    select: {
-                        id: true
-                    }
-                })
-
-                if (score) {
-                    const updateScore = await prisma.score.update({
-                        where: {
-                            id: score.id
-                        },
-                        data: {
-                            score: baseScore
-                        }
-                    })
-
-                } else {
-                    const newScore = await prisma.score.create({
-                        data: {
-                            name: name,
-                            playerId: playerId,
-                            snipeId: sniper.id,
-                            hash: hash,
-                            leaderboard: "beatleader",
-                            score: baseScore,
-                            difficulty: difficulty,
-                            gamemode: gamemode,
-                        }
-                    })
-                }
-            }
-        }
-    }/* else {
-        console.log(`[BL] : No snipper found for: ${playerName}`)
-    }*/
-
-    const getSnipperScore = await prisma.score.findFirst({
-        where: {
-            hash: hash,
-            difficulty: difficulty,
-            gamemode: gamemode,
-            leaderboard: "beatleader",
-            snipe: {
-                sniperId: playerId,
-            }
-        },
-        select: {
-            id: true,
-            score: true,
-            snipe: true
-        }
     })
 
-    if (getSnipperScore) {
-        if (getSnipperScore.score < baseScore) {
-            console.log(`${getSnipperScore.score} < ${baseScore}`)
+    if (snipePlayerScore) {
+        if (snipePlayerScore.score < baseScore) {
+            console.log(`[${prefix}] ${playerName} beat a score of ${snipePlayerScore.snipe.playerId}, on ${name} | ${difficulty}`)
+            console.log(`[${prefix}] ${snipePlayerScore.score} < ${baseScore}`)
 
             const deleteScore = await prisma.score.delete({
                 where: {
-                    id: getSnipperScore.id
+                    id: snipePlayerScore.id
                 }
             })
+        } else {
+            console.log(`[${prefix}] ${playerName} doesn't beat ${snipePlayerScore.snipe.playerId} score on ${name} | ${difficulty}`)
+            console.log(`[${prefix}] ${snipePlayerScore.score} > ${baseScore}`)
         }
     }
-}
-
-export default {
-    compareSS,
-    compareBL
 }

@@ -18,7 +18,7 @@ function startWebSocketSS() {
         let parseData = JSON.parse(data)
         let score = await Normalizer.ScoreSaber(parseData.commandData)
 
-        Comparator.compareSS(score)
+        Comparator(score, "scoresaber")
     })
 
     ScoreSaber.on('close', () => {
@@ -53,7 +53,7 @@ function startWebSocketBL() {
         let parseData = JSON.parse(data)
         let score = Normalizer.BeatLeader(parseData)
 
-        Comparator.compareBL(score)
+        Comparator(score, "beatleader")
     })
 }
 

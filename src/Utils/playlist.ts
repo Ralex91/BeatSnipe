@@ -1,7 +1,8 @@
 import fetch from "phin"
 import { PrismaClient } from '@prisma/client'
-import Scoresaber from "../Controllers/scoresaber";
-import Beatleader from "../Controllers/beatleader";
+import Scoresaber from "../Controllers/scoresaber"
+import Beatleader from "../Controllers/beatleader"
+import Cover from "./cover"
 
 const prisma = new PrismaClient();
 
@@ -29,33 +30,30 @@ export default async function (leaderboard: string, snippeId: string) {
     let playerInfo: any
 
     if (leaderboards.includes("scoresaber")) {
-        playerInfo = Scoresaber.getplayerInfo(snipeInfo.playerId)
+        playerInfo = await Scoresaber.getplayerInfo(snipeInfo.playerId)
     }
 
     if (leaderboards.includes("beatleader")) {
-        playerInfo = Beatleader.getplayerInfo(snipeInfo.playerId)
+        playerInfo = await Beatleader.getplayerInfo(snipeInfo.playerId)
     }
 
     if (!playerInfo) return { code: 404, message: "Player not found" }
 
-    const playerImage = await fetch({
-        url: playerInfo.avatar,
-        method: "GET",
-    })
+    const playlistCover = await Cover(playerInfo.avatar, leaderboard)
 
     const playlist: playlist = {
         "AllowDuplicates": false,
         "playlistTitle": `Snippe playlist ${leaderboard} of ${playerInfo.name}`,
-        "playlistAuthor": "Score Snipper",
+        "playlistAuthor": "BeatSnipe",
         "customData": {
             "syncURL": `https://beatsnipe.ralex.app/api/playlist/${leaderboard}/${snipeInfo.id}`
         },
         "songs": [],
-        "image": `base64,${Buffer.from(playerImage.body).toString('base64')}`
+        "image": `base64,${playlistCover}`
     }
 
     const hashes = []
-    snipeInfo.scores.forEach(map => {
+    snipeInfo.scores.reverse().forEach(map => {
 
         const index = hashes.indexOf(map.hash)
         if (index < 0) {
