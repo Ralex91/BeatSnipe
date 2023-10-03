@@ -105,7 +105,7 @@ export default async function (score, leaderboard: string) {
         console.log(`[${prefix}] : No snipper found for: ${playerName}`)
     }*/
 
-    const snipePlayerScore = await prisma.score.findFirst({
+    const snipePlayersScores = await prisma.score.findMany({
         where: {
             hash: hash,
             difficulty: difficulty,
@@ -122,19 +122,41 @@ export default async function (score, leaderboard: string) {
         }
     })
 
-    if (snipePlayerScore) {
-        if (snipePlayerScore.score < baseScore) {
+    if (snipePlayersScores) {
+        for (const playerScore of snipePlayersScores) {
+            if (playerScore.score < baseScore) {
+                console.log(`[${prefix}] ${playerName} beat a score of ${playerScore.snipe.playerId}, on ${name} | ${difficulty}`)
+                console.log(`[${prefix}] ${playerScore.score} < ${baseScore}`)
+
+                console.log(playerScore.id)
+                const deleteScore = await prisma.score.delete({
+                    where: {
+                        id: playerScore.id
+                    }
+                })
+
+                console.log(deleteScore)
+            } else {
+                console.log(`[${prefix}] ${playerName} doesn't beat ${playerScore.snipe.playerId} score on ${name} | ${difficulty}`)
+                console.log(`[${prefix}] ${playerScore.score} > ${baseScore}`)
+            }
+        }
+
+        /*if (snipePlayerScore.score < baseScore) {
             console.log(`[${prefix}] ${playerName} beat a score of ${snipePlayerScore.snipe.playerId}, on ${name} | ${difficulty}`)
             console.log(`[${prefix}] ${snipePlayerScore.score} < ${baseScore}`)
 
+            console.log(snipePlayerScore.id)
             const deleteScore = await prisma.score.delete({
                 where: {
                     id: snipePlayerScore.id
                 }
             })
+
+            console.log(deleteScore)
         } else {
             console.log(`[${prefix}] ${playerName} doesn't beat ${snipePlayerScore.snipe.playerId} score on ${name} | ${difficulty}`)
             console.log(`[${prefix}] ${snipePlayerScore.score} > ${baseScore}`)
-        }
+        }*/
     }
 }
