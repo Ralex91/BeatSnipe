@@ -39,12 +39,12 @@ export default async function (score, leaderboard: string) {
             let snipperScore: number | false
 
             if (leaderboard === "scoresaber") {
-                sniperInfo = await Scoresaber.getPlayerScoreMap(sniperInfo.name, hash, difficulty, gamemode)
+                snipperScore = await Scoresaber.getPlayerScoreMap(sniperInfo.name, hash, difficulty, gamemode)
             } else if (leaderboard === "beatleader") {
-                sniperInfo = await Beatleader.getPlayerScoreMap(sniper.sniperId, hash, difficulty, gamemode)
+                snipperScore = await Beatleader.getPlayerScoreMap(sniper.sniperId, hash, difficulty, gamemode)
             }
 
-            if (sniperInfo && snipperScore) {
+            if (snipperScore) {
                 console.log(`[${prefix}] : ${snipperScore} vs ${baseScore}`)
 
                 if (snipperScore < baseScore) {
@@ -70,34 +70,20 @@ export default async function (score, leaderboard: string) {
                                 id: score.id
                             }
                         })
-
-                        const createNewScore = await prisma.score.create({
-                            data: {
-                                name: name,
-                                playerId: playerId,
-                                snipeId: sniper.id,
-                                hash: hash,
-                                leaderboard: leaderboard,
-                                score: baseScore,
-                                difficulty: difficulty,
-                                gamemode: gamemode,
-                            }
-                        })
-
-                    } else {
-                        const newScore = await prisma.score.create({
-                            data: {
-                                name: name,
-                                playerId: playerId,
-                                snipeId: sniper.id,
-                                hash: hash,
-                                leaderboard: leaderboard,
-                                score: baseScore,
-                                difficulty: difficulty,
-                                gamemode: gamemode,
-                            }
-                        })
                     }
+
+                    const createNewScore = await prisma.score.create({
+                        data: {
+                            name: name,
+                            playerId: playerId,
+                            snipeId: sniper.id,
+                            hash: hash,
+                            leaderboard: leaderboard,
+                            score: baseScore,
+                            difficulty: difficulty,
+                            gamemode: gamemode,
+                        }
+                    })
                 }
             }
         }
@@ -128,35 +114,15 @@ export default async function (score, leaderboard: string) {
                 console.log(`[${prefix}] ${playerName} beat a score of ${playerScore.snipe.playerId}, on ${name} | ${difficulty}`)
                 console.log(`[${prefix}] ${playerScore.score} < ${baseScore}`)
 
-                console.log(playerScore.id)
                 const deleteScore = await prisma.score.delete({
                     where: {
                         id: playerScore.id
                     }
                 })
-
-                console.log(deleteScore)
             } else {
                 console.log(`[${prefix}] ${playerName} doesn't beat ${playerScore.snipe.playerId} score on ${name} | ${difficulty}`)
                 console.log(`[${prefix}] ${playerScore.score} > ${baseScore}`)
             }
         }
-
-        /*if (snipePlayerScore.score < baseScore) {
-            console.log(`[${prefix}] ${playerName} beat a score of ${snipePlayerScore.snipe.playerId}, on ${name} | ${difficulty}`)
-            console.log(`[${prefix}] ${snipePlayerScore.score} < ${baseScore}`)
-
-            console.log(snipePlayerScore.id)
-            const deleteScore = await prisma.score.delete({
-                where: {
-                    id: snipePlayerScore.id
-                }
-            })
-
-            console.log(deleteScore)
-        } else {
-            console.log(`[${prefix}] ${playerName} doesn't beat ${snipePlayerScore.snipe.playerId} score on ${name} | ${difficulty}`)
-            console.log(`[${prefix}] ${snipePlayerScore.score} > ${baseScore}`)
-        }*/
     }
 }

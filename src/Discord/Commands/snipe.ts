@@ -52,7 +52,7 @@ export default {
         const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
         await interaction.deferReply({ ephemeral: true })
 
-        const getSniperId = await prisma.player.findFirst({
+        const sniper = await prisma.player.findFirst({
             where: {
                 discordId: discordId
             },
@@ -61,7 +61,7 @@ export default {
             }
         })
 
-        if (!getSniperId) {
+        if (!sniper) {
             await interaction.editReply(SmallEmbed("❌ ┃ No account link! Link your account with </link:1151622228639760465>"))
             return false
         }
@@ -69,10 +69,10 @@ export default {
         const playerId = interaction.options.getString('player')
         const leaderboard = interaction.options.getString('leaderboard')
 
-        const snipeInfo = await prisma.snipe.findFirst({
+        const snipe = await prisma.snipe.findFirst({
             where: {
                 playerId: playerId,
-                sniperId: getSniperId.id
+                sniperId: sniper.id
 
             },
             select: {
@@ -93,42 +93,42 @@ export default {
                     return false
                 }
 
-                if (snipeInfo) {
+                if (snipe) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You already have a snipe on this player"))
                     return false
                 }
 
-                let snipeCount = await prisma.snipe.count({
+                const snipeTotal = await prisma.snipe.count({
                     where: {
-                        sniperId: getSniperId.id
+                        sniperId: sniper.id
                     }
                 })
 
-                if (snipeCount > 5) {
+                if (snipeTotal >= 5) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You have reached your snipe limit of 5 players at the same time"))
                     return false
                 }
 
-                if (leaderboard.includes("scoresaber")) {
-                    let isExist = await Scoresaber.getplayerInfo(playerId)
 
-                    if (!isExist) {
+                if (leaderboard.includes("scoresaber")) {
+                    const isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
+
+                    if (!isPlayerExistSS) {
                         await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Scoresaber"))
                         return false
                     }
 
                 } else if (leaderboard.includes("beatleader")) {
-                    let isExist = await Beatleader.getplayerInfo(playerId)
+                    const isPlayerExistBL = await Beatleader.getplayerInfo(playerId)
 
-                    if (!isExist) {
+                    if (!isPlayerExistBL) {
                         await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Beatleader"))
                         return false
                     }
                 }
 
-
-                await interaction.editReply(SmallEmbed("Recovering player scores ..."))
-                await Snipe.add(getSniperId.id, playerId, leaderboard)
+                await interaction.editReply(SmallEmbed("<:loading:1158674816136659006> ┃ Recovering player scores ..."))
+                await Snipe.add(sniper.id, playerId, leaderboard)
 
                 await interaction.editReply(SmallEmbed("✅ ┃ The player has been added to your list!"))
 
@@ -147,12 +147,12 @@ export default {
                     return false
                 }
 
-                if (!snipeInfo) {
+                if (!snipe) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You didn't snipe at this player"))
                     return false
                 }
 
-                await Snipe.remove(snipeInfo.id)
+                await Snipe.remove(snipe.id)
                 await interaction.editReply(SmallEmbed("✅ ┃ The player has been removed from your list"))
 
                 cooldownRemove.add(interaction.member.id)

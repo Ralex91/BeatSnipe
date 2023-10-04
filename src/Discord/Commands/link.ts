@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
-import Scoresaber from '../../Controllers/scoresaber.js';
-import Beatleader from '../../Controllers/beatleader.js';
-import SmallEmbed from '../Handlers/SmallEmbed.js';
+import Scoresaber from '../../Controllers/scoresaber.js'
+import Beatleader from '../../Controllers/beatleader.js'
+import SmallEmbed from '../Handlers/SmallEmbed.js'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,13 +23,13 @@ export default {
         const playerId = interaction.options.getString('id')
         const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
 
-        const isExist = await prisma.player.count({
+        const linked = await prisma.player.count({
             where: {
                 discordId: discordId
             }
         })
 
-        if (!isExist) {
+        if (!linked) {
             const isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
             if (!isPlayerExistSS) {
                 await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Scoresaber"))
