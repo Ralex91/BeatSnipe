@@ -25,14 +25,19 @@ export default {
         const snipes = await prisma.snipe.findMany({
             where: {
                 sniper: {
-                    discordId: discordId 
+                    discordId: discordId
                 }
             },
             select: {
                 id: true
             }
         })
-        
+
+        if (snipes) {
+            await interaction.editReply(SmallEmbed("❌ ┃ No account link! Link your account with </link:1151622228639760465>"))
+            return false
+        }
+
         for (const snipe of snipes) {
             await Snipe.remove(snipe.id)
         }
