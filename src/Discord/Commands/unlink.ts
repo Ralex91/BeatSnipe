@@ -8,19 +8,13 @@ const prisma = new PrismaClient()
 export default {
     data: new SlashCommandBuilder()
         .setName('unlink')
-        .setDescription('Unlink your account id to BeatSnipe')
-        .addStringOption((option) =>
-            option
-                .setName('id')
-                .setDescription('Your account ID')
-                .setRequired(true),
-        ),
+        .setDescription('Unlink your account id to BeatSnipe'),
 
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true })
         const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
 
-        await interaction.editReply(SmallEmbed("<:loading:1158674816136659006> ┃ Your unlink in progress ..."))
+        await interaction.editReply(SmallEmbed("<a:loading:1158674816136659006> ┃ Your unlink in progress ..."))
 
         const snipes = await prisma.snipe.findMany({
             where: {
@@ -29,7 +23,7 @@ export default {
                 }
             },
             select: {
-                id: true
+                id: true,
             }
         })
 
@@ -41,6 +35,12 @@ export default {
         for (const snipe of snipes) {
             await Snipe.remove(snipe.id)
         }
+
+        const deleteLink = await prisma.player.delete({
+            where: {
+                discordId: discordId
+            }
+        })
 
         await interaction.editReply(SmallEmbed("✅ ┃ Your account has been unlink and sniped/playlist players have been deleted"))
     }

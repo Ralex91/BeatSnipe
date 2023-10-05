@@ -83,7 +83,7 @@ export default {
             return false
         }
 
-        await interaction.editReply(SmallEmbed("<:loading:1158674816136659006> ┃ Playlist generation in progress..."))
+        await interaction.editReply(SmallEmbed("<a:loading:1158674816136659006> ┃ Playlist generation in progress..."))
 
         const playlistContent = await playlist(leaderboard, snipe.id)
         const attachment = new AttachmentBuilder(Buffer.from(JSON.stringify(playlistContent)), { name: playerInfo.name + '_Snipe_playlist_' + leaderboard + '.bplist' })

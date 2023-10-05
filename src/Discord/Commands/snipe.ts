@@ -127,7 +127,7 @@ export default {
                     }
                 }
 
-                await interaction.editReply(SmallEmbed("<:loading:1158674816136659006> ┃ Recovering player scores ..."))
+                await interaction.editReply(SmallEmbed("<a:loading:1158674816136659006> ┃ Recovering player scores ..."))
                 await Snipe.add(sniper.id, playerId, leaderboard)
 
                 await interaction.editReply(SmallEmbed("✅ ┃ The player has been added to your list!"))

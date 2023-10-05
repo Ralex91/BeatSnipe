@@ -9,7 +9,7 @@ datasource db {
 
 model Player {
     id        String  @id @unique
-    discordId String?
+    discordId String  @unique
     Snipe     Snipe[]
 }
 
