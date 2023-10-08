@@ -2,38 +2,17 @@ import { PrismaClient } from '@prisma/client'
 import Scoresaber from './scoresaber';
 import Beatleader from './beatleader'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-async function add(sniperId: string, playerId: string, leaderboard) {
-    const createSnipe = await prisma.snipe.create({
-        data: {
-            sniperId: sniperId,
-            playerId: playerId,
-            leaderboard: leaderboard,
-        }
-    })
-
-    const leaderboards = createSnipe.leaderboard.split(",")
-    const scoresToSnipe = []
-    let playerScores: playerScore[]
-    let playerToSnipeScores: playerScore[]
-
-    if (leaderboards.includes("scoresaber")) {
-        playerScores = await Scoresaber.getPlayerScores(sniperId)
-        playerToSnipeScores = await Scoresaber.getPlayerScores(playerId)
-    }
-
-    if (leaderboards.includes("beatleader")) {
-        playerScores = await Beatleader.getPlayerScores(sniperId)
-        playerToSnipeScores = await Beatleader.getPlayerScores(playerId)
-    }
+const addScores = async (snipeId: string, playerId: string, leaderboard: string, playerScores: playerScore[], playerToSnipeScores: playerScore[]) => {
+    let scoresToSnipe = []
 
     for (const s1 of playerToSnipeScores) {
         if (playerScores.find(s2 => s1.songHash === s2.songHash && s1.difficulty === s2.difficulty && s2.score < s1.score)) {
             scoresToSnipe.push({
                 name: s1.songName,
                 playerId: playerId,
-                snipeId: createSnipe.id,
+                snipeId: snipeId,
                 hash: s1.songHash,
                 leaderboard: leaderboard,
                 score: s1.score,
@@ -47,6 +26,32 @@ async function add(sniperId: string, playerId: string, leaderboard) {
         data: scoresToSnipe.reverse(),
         skipDuplicates: true
     })
+}
+
+async function add(sniperId: string, playerId: string, leaderboard) {
+    const createSnipe = await prisma.snipe.create({
+        data: {
+            sniperId: sniperId,
+            playerId: playerId,
+            leaderboard: leaderboard,
+        }
+    })
+
+    const leaderboards = createSnipe.leaderboard.split(",")
+
+    if (leaderboards.includes("scoresaber")) {
+        let playerScores: playerScore[] = await Scoresaber.getPlayerScores(sniperId)
+        let playerToSnipeScores: playerScore[] = await Scoresaber.getPlayerScores(playerId)
+
+        await addScores(createSnipe.id, playerId, "scoresaber", playerScores, playerToSnipeScores)
+    }
+
+    if (leaderboards.includes("beatleader")) {
+        let playerScores: playerScore[] = await Beatleader.getPlayerScores(sniperId)
+        let playerToSnipeScores: playerScore[] = await Beatleader.getPlayerScores(playerId)
+
+        await addScores(createSnipe.id, playerId, "beatleader", playerScores, playerToSnipeScores)
+    }
 
     return createSnipe
 }

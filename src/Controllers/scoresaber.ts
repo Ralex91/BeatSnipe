@@ -1,33 +1,19 @@
 import fetch from 'phin'
 
-const SSDifficultyToText = (difficulty: Number) => {
-    switch (difficulty) {
-        case 1:
-            return "Easy"
-        case 3:
-            return "Normal"
-        case 5:
-            return "Hard"
-        case 7:
-            return "Expert"
-        case 9:
-            return "ExpertPlus"
-    }
+const SSDifficulty = {
+    "Easy": 1,
+    "Normal": 3,
+    "Hard": 5,
+    "Expert": 7,
+    "ExpertPlus": 9
 }
 
-const SSDifficultyToNumber = (difficulty: string) => {
-    switch (difficulty) {
-        case "Easy":
-            return 1
-        case "Normal":
-            return 3
-        case "Hard":
-            return 5
-        case "Expert":
-            return 7
-        case "ExpertPlus":
-            return 9
+const convertSSDifficulty = (value: string | number, index: boolean = false) => {
+    if (index) {
+        return SSDifficulty[value]
     }
+
+    return Object.keys(SSDifficulty).find(key => SSDifficulty[key] === value)
 }
 
 async function getplayerInfo(playerId: string) {
@@ -37,34 +23,34 @@ async function getplayerInfo(playerId: string) {
         parse: "json"
     })
 
-    if (playerData.statusCode === 200) {
-        return {
-            name: playerData.body.name,
-            id: playerData.body.id,
-            avatar: playerData.body.profilePicture,
-            pp: playerData.body.pp,
-            rank: playerData.body.rank,
-            country: playerData.body.country,
-            countryRank: playerData.body.countryRank,
-        }
-    } else {
+    if (playerData.statusCode !== 200) {
         return false
+    }
+
+    return {
+        name: playerData.body.name,
+        id: playerData.body.id,
+        avatar: playerData.body.profilePicture,
+        pp: playerData.body.pp,
+        rank: playerData.body.rank,
+        country: playerData.body.country,
+        countryRank: playerData.body.countryRank,
     }
 
 }
 
 async function getPlayerScoreMap(playerName: string, hash: string, difficulty: string, gamemode: string) {
     const getScore: any = await fetch({
-        url: `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores?difficulty=${SSDifficultyToNumber(difficulty)}&search=${playerName}&gameMode=Solo${gamemode}`,
+        url: `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores?difficulty=${convertSSDifficulty(difficulty, true)}&search=${playerName}&gameMode=Solo${gamemode}`,
         method: "GET",
         parse: "json"
     })
 
-    if (getScore.statusCode === 200) {
-        return getScore.body.scores[0].modifiedScore
-    } else {
+    if (getScore.statusCode !== 200) {
         return false
     }
+
+    return getScore.body.scores[0].modifiedScore
 }
 
 async function getPlayerScores(scoreSaberId: string) {
@@ -88,7 +74,7 @@ async function getPlayerScores(scoreSaberId: string) {
                     songName: playerScore.leaderboard.songName,
                     score: playerScore.score.modifiedScore,
                     songHash: playerScore.leaderboard.songHash,
-                    difficulty: SSDifficultyToText(playerScore.leaderboard.difficulty.difficulty),
+                    difficulty: convertSSDifficulty(playerScore.leaderboard.difficulty.difficulty),
                 })
             }
 

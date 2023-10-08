@@ -7,21 +7,20 @@ async function getplayerInfo(playerId: string) {
         parse: "string"
     })
 
-    if (playerData.statusCode === 200) {
-        const data = JSON.parse(playerData.body)
-        return {
-            name: data.name,
-            id: data.id,
-            avatar: data.avatar,
-            pp: data.pp,
-            rank: data.rank,
-            country: data.country,
-            countryRank: data.countryRank,
-        }
-    } else {
+    if (playerData.statusCode !== 200) {
         return false
     }
 
+    const data = JSON.parse(playerData.body)
+    return {
+        name: data.name,
+        id: data.id,
+        avatar: data.avatar,
+        pp: data.pp,
+        rank: data.rank,
+        country: data.country,
+        countryRank: data.countryRank,
+    }
 }
 
 async function getPlayerScoreMap(playerId: string, hash: string, difficulty: string, gamemode: string) {
@@ -31,12 +30,12 @@ async function getPlayerScoreMap(playerId: string, hash: string, difficulty: str
         parse: "string"
     })
 
-    if (getScore.statusCode === 200) {
-        let data = JSON.parse(getScore.body)
-        return data.score
-    } else {
+    if (getScore.statusCode !== 200) {
         return false
     }
+
+    let data = JSON.parse(getScore.body)
+    return data.score
 }
 
 async function getPlayerScores(beatLeaderId: string) {

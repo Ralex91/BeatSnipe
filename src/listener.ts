@@ -8,12 +8,14 @@ function startWebSocketSS() {
 
     ScoreSaber.on('error', console.error)
 
+    /*
     ScoreSaber.on('open', function open() {
         console.log('ScoreSaber connected')
     })
+    */
 
     ScoreSaber.on('message', async function message(data: string) {
-        if (!isJsonString(data)) return console.log(data)
+        if (!isJsonString(data)) return false //console.log(data)
 
         let parseData = JSON.parse(data)
         let score = await Normalizer.ScoreSaber(parseData.commandData)
@@ -22,11 +24,11 @@ function startWebSocketSS() {
     })
 
     ScoreSaber.on('close', () => {
-        console.log("[SS] WebSocket closed")
+        //console.log("[SS] WebSocket closed")
 
         setTimeout(function () {
             startWebSocketSS()
-        }, 10 * 1000)
+        }, 1000)
     })
 }
 
@@ -35,20 +37,22 @@ function startWebSocketBL() {
 
     BeatLeader.on('error', console.error)
 
+    /*
     BeatLeader.on('open', function open() {
         console.log('BeatLeader connected')
     })
+    */
 
     BeatLeader.on('close', () => {
-        console.log("[BL] WebSocket closed")
+        //console.log("[BL] WebSocket closed")
 
         setTimeout(function () {
             startWebSocketBL()
-        }, 10 * 1000)
+        }, 1000)
     })
 
     BeatLeader.on('message', async function message(data: string) {
-        if (!isJsonString(data)) return console.log(data)
+        if (!isJsonString(data)) return false //console.log(data)
 
         let parseData = JSON.parse(data)
         let score = Normalizer.BeatLeader(parseData)
