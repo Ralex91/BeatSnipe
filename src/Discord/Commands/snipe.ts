@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
 import Snipe from '../../Controllers/snipe'
 import Scoresaber from '../../Controllers/scoresaber'
@@ -47,9 +47,9 @@ export default {
                 ),
         ),
 
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const action = interaction.options.getSubcommand(true)
-        const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
+        const discordId = interaction.user.id
         await interaction.deferReply({ ephemeral: true })
 
         const sniper = await prisma.player.findFirst({
@@ -63,11 +63,16 @@ export default {
 
         if (!sniper) {
             await interaction.editReply(SmallEmbed("❌ ┃ No account link! Link your account with </link:1151622228639760465>"))
-            return false
+            return
         }
 
         const playerId = interaction.options.getString('player')
         const leaderboard = interaction.options.getString('leaderboard')
+
+        if (!playerId) {
+            await interaction.editReply(SmallEmbed("❌ ┃ Player ID is require"))
+            return
+        }
 
         const snipe = await prisma.snipe.findFirst({
             where: {
@@ -85,17 +90,22 @@ export default {
 
                 if (cooldownAdd.has(discordId)) {
                     await interaction.editReply(SmallEmbed("⏱ ┃ You have to wait 1 minutes before you can use this command again"))
-                    return false
+                    return
                 }
 
                 if (playerId === discordId) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You can't snipe yourself 🧠"))
-                    return false
+                    return
+                }
+
+                if (!leaderboard) {
+                    await interaction.editReply(SmallEmbed("❌ ┃ Leaderboard is require"))
+                    return
                 }
 
                 if (snipe) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You already have a snipe on this player"))
-                    return false
+                    return
                 }
 
                 const snipeTotal = await prisma.snipe.count({
@@ -106,7 +116,7 @@ export default {
 
                 if (snipeTotal >= 5) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You have reached your snipe limit of 5 players at the same time"))
-                    return false
+                    return
                 }
 
 
@@ -115,7 +125,7 @@ export default {
 
                     if (!isPlayerExistSS) {
                         await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Scoresaber"))
-                        return false
+                        return
                     }
 
                 } else if (leaderboard.includes("beatleader")) {
@@ -123,7 +133,7 @@ export default {
 
                     if (!isPlayerExistBL) {
                         await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Beatleader"))
-                        return false
+                        return
                     }
                 }
 
@@ -132,7 +142,7 @@ export default {
 
                 await interaction.editReply(SmallEmbed("✅ ┃ The player has been added to your list!"))
 
-                cooldownAdd.add(interaction.member.id)
+                cooldownAdd.add(discordId)
                 setTimeout(function () {
                     cooldownAdd.delete(discordId)
                 }, 60000)
@@ -144,18 +154,18 @@ export default {
 
                 if (cooldownRemove.has(discordId)) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You have to wait 1 minutes before you can use this command again"))
-                    return false
+                    return
                 }
 
                 if (!snipe) {
                     await interaction.editReply(SmallEmbed("❌ ┃ You didn't snipe at this player"))
-                    return false
+                    return
                 }
 
                 await Snipe.remove(snipe.id)
                 await interaction.editReply(SmallEmbed("✅ ┃ The player has been removed from your list"))
 
-                cooldownRemove.add(interaction.member.id)
+                cooldownRemove.add(discordId)
                 setTimeout(function () {
                     cooldownRemove.delete(discordId)
                 }, 60000)

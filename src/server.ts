@@ -20,6 +20,15 @@ app.use(compression({ level: 9 }))
 app.use('/api/', apiRouter)
 
 app.get('/discord', function (req: Request, res: Response) {
+    if (!process.env.DISCORD_INVITE) {
+        res.json({
+            code: 403,
+            message: "DISCORD_INVITE undefined"
+        })
+
+        return
+    }
+
     res.redirect(process.env.DISCORD_INVITE)
 })
 

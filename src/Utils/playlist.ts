@@ -1,4 +1,3 @@
-import fetch from "phin"
 import { PrismaClient } from '@prisma/client'
 import Scoresaber from "../Controllers/scoresaber"
 import Beatleader from "../Controllers/beatleader"
@@ -52,7 +51,7 @@ export default async function (leaderboard: string, snippeId: string) {
         "image": `base64,${playlistCover}`
     }
 
-    const hashes = []
+    const hashes: string[] = []
     snipeInfo.scores.reverse().forEach(map => {
 
         const index = hashes.indexOf(map.hash)

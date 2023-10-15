@@ -7,7 +7,13 @@ const leaderboardList = [
 ]
 
 export default async (req: Request, res: Response) => {
-    if (!req.headers['user-agent'].includes("PlaylistManager")) {
+    let userAgent = req.headers['user-agent']
+
+    if (!userAgent) {
+        return res.json({ code: 401, message: "Unauthorized" })
+    }
+
+    if (!userAgent && !userAgent.includes("PlaylistManager")) {
         return res.json({ code: 401, message: "Unauthorized" })
     }
 

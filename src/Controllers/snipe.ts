@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import Scoresaber from './scoresaber';
+import Scoresaber from './scoresaber'
 import Beatleader from './beatleader'
 
 const prisma = new PrismaClient()
@@ -28,7 +28,7 @@ const addScores = async (snipeId: string, playerId: string, leaderboard: string,
     })
 }
 
-async function add(sniperId: string, playerId: string, leaderboard) {
+async function add(sniperId: string, playerId: string, leaderboard: string) {
     const createSnipe = await prisma.snipe.create({
         data: {
             sniperId: sniperId,
@@ -37,20 +37,22 @@ async function add(sniperId: string, playerId: string, leaderboard) {
         }
     })
 
-    const leaderboards = createSnipe.leaderboard.split(",")
+    if (leaderboard.includes("scoresaber")) {
+        let playerScores = await Scoresaber.getPlayerScores(sniperId)
+        let playerToSnipeScores = await Scoresaber.getPlayerScores(playerId)
 
-    if (leaderboards.includes("scoresaber")) {
-        let playerScores: playerScore[] = await Scoresaber.getPlayerScores(sniperId)
-        let playerToSnipeScores: playerScore[] = await Scoresaber.getPlayerScores(playerId)
-
-        await addScores(createSnipe.id, playerId, "scoresaber", playerScores, playerToSnipeScores)
+        if (playerScores && playerToSnipeScores) {
+            await addScores(createSnipe.id, playerId, "scoresaber", playerScores, playerToSnipeScores)
+        }
     }
 
-    if (leaderboards.includes("beatleader")) {
-        let playerScores: playerScore[] = await Beatleader.getPlayerScores(sniperId)
-        let playerToSnipeScores: playerScore[] = await Beatleader.getPlayerScores(playerId)
+    if (leaderboard.includes("beatleader")) {
+        let playerScores = await Beatleader.getPlayerScores(sniperId)
+        let playerToSnipeScores = await Beatleader.getPlayerScores(playerId)
 
-        await addScores(createSnipe.id, playerId, "beatleader", playerScores, playerToSnipeScores)
+        if (playerScores && playerToSnipeScores) {
+            await addScores(createSnipe.id, playerId, "beatleader", playerScores, playerToSnipeScores)
+        }
     }
 
     return createSnipe

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, AttachmentBuilder, ChatInputCommandInteraction } from 'discord.js'
 import playlist from '../../Utils/playlist.js'
 import { PrismaClient } from '@prisma/client'
 import SmallEmbed from '../Handlers/SmallEmbed.js'
@@ -29,16 +29,26 @@ export default {
                 .setRequired(true),
         ),
 
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply({ ephemeral: true })
 
         const playerId = interaction.options.getString('player')
-        const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
+        const discordId = interaction.user.id
         const leaderboard = interaction.options.getString('leaderboard')
 
         if (cooldown.has(discordId)) {
             await interaction.editReply(SmallEmbed("⏱ ┃ You have to wait 20 seconde before you can use the playlist commands again"))
-            return false
+            return
+        }
+
+        if (!playerId) {
+            await interaction.editReply(SmallEmbed("❌ ┃ Player ID is require"))
+            return
+        }
+
+        if (!leaderboard) {
+            await interaction.editReply(SmallEmbed("❌ ┃ Leaderboard is require"))
+            return
         }
 
         const snipe = await prisma.snipe.findFirst({
@@ -54,22 +64,22 @@ export default {
             }
         })
 
-        cooldown.add(interaction.member.id)
+        cooldown.add(discordId)
         setTimeout(function () {
             cooldown.delete(discordId)
         }, 20000)
 
         if (!snipe) {
             await interaction.editReply(SmallEmbed("❌ ┃ Snipe not found"))
-            return false
+            return
         }
 
         if (!snipe.leaderboard.split(",").includes(leaderboard)) {
             interaction.editReply(SmallEmbed("❌ ┃ The snipe is not active on this leaderboard"))
-            return false
+            return
         }
 
-        let playerInfo: playerInfo | false
+        let playerInfo: playerInfo | undefined
         if (leaderboard === "scoresaber") {
             playerInfo = await Scoresaber.getplayerInfo(playerId)
         }
@@ -80,7 +90,7 @@ export default {
 
         if (!playerInfo) {
             await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered in this leaderboard"))
-            return false
+            return
         }
 
         await interaction.editReply(SmallEmbed("<a:loading:1158674816136659006> ┃ Playlist generation in progress..."))

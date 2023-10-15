@@ -1,7 +1,5 @@
-import scoreUtils from "../Utils/score"
-
-async function ScoreSaber({ leaderboard, score }) {
-    let acc: any = leaderboard.maxScore > 0 ? score.modifiedScore / leaderboard.maxScore * 100 : 0 //await scoreUtils.calcAcc(hash, difficulty, gamemode, score.modifiedScore)
+async function ScoreSaber({ leaderboard, score }: any) {
+    let acc: any = leaderboard.maxScore > 0 ? score.modifiedScore / leaderboard.maxScore * 100 : 0
 
     return {
         hash: leaderboard.songHash,
@@ -15,7 +13,7 @@ async function ScoreSaber({ leaderboard, score }) {
     }
 }
 
-function BeatLeader({ leaderboard, player, accuracy, modifiedScore }) {
+function BeatLeader({ leaderboard, player, accuracy, modifiedScore }: any) {
     let acc: number = accuracy * 100
 
     return {

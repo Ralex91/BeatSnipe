@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
 import Scoresaber from '../../Controllers/scoresaber.js'
 import Beatleader from '../../Controllers/beatleader.js'
@@ -17,11 +17,16 @@ export default {
                 .setRequired(true),
         ),
 
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply({ ephemeral: true })
 
         const playerId = interaction.options.getString('id')
-        const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
+        const discordId = interaction.user.id
+
+        if (!playerId) {
+            await interaction.editReply(SmallEmbed("❌ ┃ Player ID is require"))
+            return
+        }
 
         const linked = await prisma.player.count({
             where: {
@@ -29,34 +34,24 @@ export default {
             }
         })
 
-        if (!linked) {
-            const isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
-            if (!isPlayerExistSS) {
-                await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Scoresaber"))
-                return false
-            }
-
-            const isPlayerExistBL = await Beatleader.getplayerInfo(playerId)
-            if (!isPlayerExistBL) {
-                await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Beatleader"))
-                return false
-            }
-
-            if (!isPlayerExistSS && !isPlayerExistBL) {
-                await interaction.editReply(SmallEmbed("❌ ┃ Your account does not exist on any leaderboard"))
-                return false
-            }
-
-            const addPlayer = await prisma.player.create({
-                data: {
-                    id: playerId,
-                    discordId: interaction.member.id
-                }
-            })
-
-            await interaction.editReply(SmallEmbed("✅ ┃ Your account have been linked !"))
-        } else {
+        if (linked) {
             await interaction.editReply(SmallEmbed("❌ ┃ Your account already linked !"))
         }
+        const isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
+        const isPlayerExistBL = await Beatleader.getplayerInfo(playerId)
+
+        if (!isPlayerExistSS && !isPlayerExistBL) {
+            await interaction.editReply(SmallEmbed("❌ ┃ Your account does not exist on any leaderboard"))
+            return false
+        }
+
+        const addPlayer = await prisma.player.create({
+            data: {
+                id: playerId,
+                discordId: discordId
+            }
+        })
+
+        await interaction.editReply(SmallEmbed("✅ ┃ Your account have been linked !"))
     }
 }

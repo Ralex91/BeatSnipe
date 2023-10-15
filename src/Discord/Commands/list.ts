@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
 import Beatleader from '../../Controllers/beatleader'
 import Scoresaber from '../../Controllers/scoresaber'
@@ -6,13 +6,29 @@ import SmallEmbed from '../Handlers/SmallEmbed'
 
 const prisma = new PrismaClient()
 
+interface snipeList {
+    color: number
+    title: string
+    thumbnail: {
+        url: string
+    }
+    fields: {
+        name: string
+        value: string
+    }[]
+    footer: {
+        text: string
+        icon_url?: string
+    }
+}
+
 export default {
     data: new SlashCommandBuilder()
         .setName('list')
         .setDescription('Show your snipe list'),
 
-    async execute(interaction) {
-        const discordId = interaction.guild !== null ? interaction.member.id : interaction.user.id
+    async execute(interaction: ChatInputCommandInteraction) {
+        const discordId = interaction.user.id
         await interaction.deferReply({ ephemeral: true })
 
         const getSniperId = await prisma.player.findFirst({
@@ -26,7 +42,7 @@ export default {
 
         if (!getSniperId) {
             await interaction.editReply(SmallEmbed("❌ ┃ No account link! Link your account with </link:1151622228639760465>"))
-            return false
+            return
         }
 
         const getAllSnipe = await prisma.snipe.findMany({
@@ -42,10 +58,10 @@ export default {
 
         if (!getAllSnipe) {
             await interaction.editReply(SmallEmbed("❌ ┃ Your snipe list is empty"))
-            return false
+            return
         }
 
-        const snipeListEmbed = {
+        const snipeListEmbed: snipeList = {
             color: 0xff0000,
             title: "📋 ┃ List of players you are sniping",
             thumbnail: {
@@ -54,12 +70,12 @@ export default {
             fields: [],
             footer: {
                 text: `BeatSnipe v${process.env.DISPLAY_VERSION}`,
-                icon_url: client.user.displayAvatarURL(),
+                //icon_url: client.user?.displayAvatarURL(),
             },
         };
 
         for (const player of getAllSnipe) {
-            let playerInfo: playerInfo | false
+            let playerInfo: playerInfo | undefined
 
             if (player.leaderboard.includes("scoresaber")) {
                 playerInfo = await Scoresaber.getplayerInfo(player.playerId)
@@ -68,7 +84,12 @@ export default {
             }
 
             if (playerInfo) {
-                snipeListEmbed.fields.push({ name: `👤 ┃ ${playerInfo.name}`, value: "🔹 `" + player.playerId + "`" })
+                let field = {
+                    name: `👤 ┃ ${playerInfo.name}`,
+                    value: "🔹 `" + player.playerId + "`"
+                };
+
+                snipeListEmbed.fields.push(field)
             } else {
                 console.log(`Player not found on API: ${player.playerId}`)
             }

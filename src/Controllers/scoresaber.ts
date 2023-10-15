@@ -1,6 +1,6 @@
 import fetch from 'phin'
 
-const SSDifficulty = {
+const SSDifficultyId: { [code: string]: number } = {
     "Easy": 1,
     "Normal": 3,
     "Hard": 5,
@@ -8,13 +8,11 @@ const SSDifficulty = {
     "ExpertPlus": 9
 }
 
-const convertSSDifficulty = (value: string | number, index: boolean = false) => {
-    if (index) {
-        return SSDifficulty[value]
-    }
+const SSDifficultyString: { [code: number]: string } = Object.fromEntries(
+    Object.entries(SSDifficultyId)
+        .map(a => a.reverse())
+)
 
-    return Object.keys(SSDifficulty).find(key => SSDifficulty[key] === value)
-}
 
 async function getplayerInfo(playerId: string) {
     const playerData: any = await fetch({
@@ -24,7 +22,7 @@ async function getplayerInfo(playerId: string) {
     })
 
     if (playerData.statusCode !== 200) {
-        return false
+        return
     }
 
     return {
@@ -41,13 +39,13 @@ async function getplayerInfo(playerId: string) {
 
 async function getPlayerScoreMap(playerName: string, hash: string, difficulty: string, gamemode: string) {
     const getScore: any = await fetch({
-        url: `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores?difficulty=${convertSSDifficulty(difficulty, true)}&search=${playerName}&gameMode=Solo${gamemode}`,
+        url: `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores?difficulty=${SSDifficultyId[difficulty]}&search=${playerName}&gameMode=Solo${gamemode}`,
         method: "GET",
         parse: "json"
     })
 
     if (getScore.statusCode !== 200) {
-        return false
+        return
     }
 
     return getScore.body.scores[0].modifiedScore
@@ -74,7 +72,7 @@ async function getPlayerScores(scoreSaberId: string) {
                     songName: playerScore.leaderboard.songName,
                     score: playerScore.score.modifiedScore,
                     songHash: playerScore.leaderboard.songHash,
-                    difficulty: convertSSDifficulty(playerScore.leaderboard.difficulty.difficulty),
+                    difficulty: SSDifficultyString[playerScore.leaderboard.difficulty.difficulty],
                 })
             }
 

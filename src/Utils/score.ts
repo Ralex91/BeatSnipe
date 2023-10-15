@@ -6,13 +6,11 @@ import fetch from "phin"
 */
 
 
-async function getMapDetails(hash) {
+async function getMapDetails(hash: string) {
     let mapDetails = await fetch({
         'url': 'https://beatsaver.com/api/maps/hash/' + hash,
         'parse': 'json'
     })
-
-    console.log(mapDetails.body)
 
     return mapDetails.body
 }
@@ -33,11 +31,11 @@ function getMapMaxScore(notes: number) {
     return maxScore
 }
 
-async function calcAcc(hash, levelDifficulty: string, levelGameMode: string, score: number) {
+async function calcAcc(hash: string, levelDifficulty: string, levelGameMode: string, score: number) {
 
     let mapDetails: any = await getMapDetails(hash)
 
-    const notes = mapDetails.versions[0].diffs.filter(diff => diff.difficulty === levelDifficulty && diff.characteristic === levelGameMode)[0].notes
+    const notes = mapDetails.versions[0].diffs.filter((diff: any) => diff.difficulty === levelDifficulty && diff.characteristic === levelGameMode)[0].notes
     const maxScore = getMapMaxScore(notes)
     return score / maxScore * 100
 }

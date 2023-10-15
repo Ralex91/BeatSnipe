@@ -33,10 +33,11 @@
   - ### Config for .env
     ```env
     WEB_PORT=5055
-    DISPLAY_VERSION="1.0"
+    DISPLAY_VERSION="1.1"
     DISCORD_INVITE="https://discord.gg/zw9GCxnc8A"
+    DISCORD_GUILDID="000000000000000000"
     DISCORD_TOKEN="XXXXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXX"
-    DATABASE_URL="mysql://admin:username@127.0.0.1:3306/database?schema=public"
+    DATABASE_URL="mysql://username:password@127.0.0.1:3306/database?schema=public"
     ```
 
 <br>

@@ -9,7 +9,7 @@ const checkNewSnipeScore = async (scoreData: comparator, leaderboard: string) =>
 
     if (!prefix) {
         console.log("Invalid leaderboard")
-        return false
+        return
     }
 
     const { hash, name, difficulty, gamemode, baseScore, playerId, playerName } = scoreData
@@ -28,10 +28,10 @@ const checkNewSnipeScore = async (scoreData: comparator, leaderboard: string) =>
 
     // There's no sniper on this player
     if (!sniper) {
-        return false
+        return
     }
 
-    let sniperInfo: playerInfo | false
+    let sniperInfo: playerInfo | undefined
 
     if (leaderboard === "scoresaber") {
         sniperInfo = await Scoresaber.getplayerInfo(sniper.sniperId)
@@ -41,10 +41,10 @@ const checkNewSnipeScore = async (scoreData: comparator, leaderboard: string) =>
 
     // Sniper info not found
     if (!sniperInfo) {
-        return false
+        return
     }
 
-    let snipperScore: number | false
+    let snipperScore: number | undefined
 
     if (leaderboard === "scoresaber") {
         snipperScore = await Scoresaber.getPlayerScoreMap(sniperInfo.name, hash, difficulty, gamemode)
@@ -54,7 +54,7 @@ const checkNewSnipeScore = async (scoreData: comparator, leaderboard: string) =>
 
     // No sniper score on this map & difficulty
     if (!snipperScore) {
-        return false
+        return
     }
 
     console.log(`[${prefix}] ${playerName} attempted snipe a score on ${name} | ${difficulty}`)
@@ -62,7 +62,7 @@ const checkNewSnipeScore = async (scoreData: comparator, leaderboard: string) =>
 
     // Player don't beat sniper score
     if (snipperScore > baseScore) {
-        return false
+        return
     }
 
     // Player beat sniper score: snipperScore < baseScore
@@ -111,7 +111,7 @@ const checkSniperBeatScore = async (scoreData: comparator, leaderboard: string) 
 
     if (!prefix) {
         console.log("Invalid leaderboard")
-        return false
+        return
     }
 
     const { hash, name, difficulty, gamemode, baseScore, playerId, playerName } = scoreData
@@ -135,7 +135,7 @@ const checkSniperBeatScore = async (scoreData: comparator, leaderboard: string) 
 
     // Sniper has no scores to beat OR sniper not found
     if (!snipePlayersScores) {
-        return false
+        return
     }
 
     for (const playerScore of snipePlayersScores) {

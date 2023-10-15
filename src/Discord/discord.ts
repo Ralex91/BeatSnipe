@@ -1,25 +1,26 @@
-import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js'
-import type ApplicationCommand from './Templates/ApplicationCommand.js'
+import { Client, GatewayIntentBits, ActivityType } from 'discord.js'
 import Commands from './Handlers/Commands.js'
 import Events from './Handlers/Events.js'
 import 'dotenv/config'
 
-global.client = Object.assign(
-	new Client({
-		intents: [
-			GatewayIntentBits.Guilds,
-			GatewayIntentBits.GuildMessages,
-		],
-		partials: [Partials.Channel]
-	}),
-	{
-		commands: new Collection<string, ApplicationCommand>(),
-	}
-)
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+	]
+})
 
-client.commands = new Collection()
+client.once('ready', async () => {
 
-Commands(client)
-Events(client)
+	const commands = new Commands(client)
+	commands.load()
+	commands.listen()
+
+	const events = new Events(client)
+	await events.load()
+
+	client.user?.setActivity(`Version ${process.env.DISPLAY_VERSION}`, { type: ActivityType.Watching })
+	console.log(`Logged in as ${client.user?.tag as string}!`)
+})
 
 client.login(process.env.DISCORD_TOKEN)

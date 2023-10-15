@@ -8,7 +8,7 @@ async function getplayerInfo(playerId: string) {
     })
 
     if (playerData.statusCode !== 200) {
-        return false
+        return
     }
 
     const data = JSON.parse(playerData.body)
@@ -31,7 +31,7 @@ async function getPlayerScoreMap(playerId: string, hash: string, difficulty: str
     })
 
     if (getScore.statusCode !== 200) {
-        return false
+        return
     }
 
     let data = JSON.parse(getScore.body)
@@ -55,10 +55,10 @@ async function getPlayerScores(beatLeaderId: string) {
 
             for (const playerScore of playerScores) {
                 scores.push({
-                    songName: playerScore.leaderboard.songName,
+                    songName: playerScore.leaderboard.song.name,
                     songHash: playerScore.leaderboard.song.hash,
                     score: playerScore.modifiedScore,
-                    difficulty: playerScore.leaderboard.difficulty.value,
+                    difficulty: playerScore.leaderboard.difficulty.difficultyName,
                 })
             }
 

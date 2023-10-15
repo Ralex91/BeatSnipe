@@ -5,6 +5,7 @@ import path from "path"
 const bufferImage = async (url: string) => {
     const { body } = await fetch(url)
     const imageBuffer = Buffer.from(body)
+
     return imageBuffer
 }
 
@@ -12,11 +13,11 @@ export default async function (avatarURL: string, leaderboard: string) {
     const cv = createCanvas(200, 200)
     const ct = cv.getContext('2d')
 
-    let avatarBuf = await bufferImage(avatarURL)
-    let avatar = await loadImage(avatarBuf)
+    const avatarBuf = await bufferImage(avatarURL)
+    const avatar = await loadImage(avatarBuf)
 
-    let scope = await loadImage(path.join(__dirname, "../assets/scope.png"))
-    let leaderboardIcon = await loadImage(path.join(__dirname, `../assets/${leaderboard}.png`))
+    const scope = await loadImage(path.join(__dirname, "../assets/scope.png"))
+    const leaderboardIcon = await loadImage(path.join(__dirname, `../assets/${leaderboard}.png`))
     ct.shadowColor = "#212121"
     ct.shadowBlur = 4
 

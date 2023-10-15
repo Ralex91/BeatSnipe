@@ -32,10 +32,10 @@ declare global {
                 characteristic: string
                 name: string
             }[]
-        }[]    
+        }[]
         image: string
     }
-    
+
     interface comparator {
         hash: string
         name: string
