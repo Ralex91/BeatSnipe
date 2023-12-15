@@ -119,20 +119,32 @@ export default {
                     return
                 }
 
-
                 if (leaderboard.includes("scoresaber")) {
                     const isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
+                    const isSniperExistSS = await Scoresaber.getplayerInfo(sniper.id)
 
                     if (!isPlayerExistSS) {
                         await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Scoresaber"))
                         return
                     }
 
-                } else if (leaderboard.includes("beatleader")) {
+                    if (!isSniperExistSS) {
+                        await interaction.editReply(SmallEmbed("❌ ┃ Your account is not registered on Scoresaber"))
+                        return
+                    }
+                }
+
+                if (leaderboard.includes("beatleader")) {
                     const isPlayerExistBL = await Beatleader.getplayerInfo(playerId)
+                    const isSniperExistBL = await Beatleader.getplayerInfo(sniper.id)
 
                     if (!isPlayerExistBL) {
                         await interaction.editReply(SmallEmbed("❌ ┃ The player is not registered on Beatleader"))
+                        return
+                    }
+
+                    if (!isSniperExistBL) {
+                        await interaction.editReply(SmallEmbed("❌ ┃ Your account is not registered on Beatleader"))
                         return
                     }
                 }

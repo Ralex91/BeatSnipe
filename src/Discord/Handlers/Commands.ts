@@ -49,14 +49,10 @@ export default class Commands {
 			this.commands.set(command.data.name, command)
 		}
 
-		if (!process.env.DISCORD_GUILDID) {
-			console.error("DISCORD_GUILDID undefined")
-			return
-		}
-
-		const guild = <Guild>this.client.guilds.cache.get(process.env.DISCORD_GUILDID)
-		await guild.commands.set([])
-		await guild.commands.set(commands)
+		//const guild = <Guild>this.client.guilds.cache.get("1151103110178164840")
+		//await guild.commands.set([])
+		//await guild.commands.set(commands)
+		this.client.application?.commands.set(commands);
 	}
 
 	async listen() {

@@ -28,6 +28,7 @@ async function getplayerInfo(playerId: string) {
     return {
         name: playerData.body.name,
         id: playerData.body.id,
+        url: `https://scoresaber.com/u/${playerData.body.id}`,
         avatar: playerData.body.profilePicture,
         pp: playerData.body.pp,
         rank: playerData.body.rank,

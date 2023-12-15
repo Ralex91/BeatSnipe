@@ -15,6 +15,7 @@ async function getplayerInfo(playerId: string) {
     return {
         name: data.name,
         id: data.id,
+        url: `https://www.beatleader.xyz/u/${data.id}`,
         avatar: data.avatar,
         pp: data.pp,
         rank: data.rank,

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { PrismaClient } from '@prisma/client'
 import Scoresaber from '../../Controllers/scoresaber.js'
 import Beatleader from '../../Controllers/beatleader.js'
@@ -36,13 +36,16 @@ export default {
 
         if (linked) {
             await interaction.editReply(SmallEmbed("❌ ┃ Your account already linked !"))
+            return
         }
-        const isPlayerExistSS = await Scoresaber.getplayerInfo(playerId)
-        const isPlayerExistBL = await Beatleader.getplayerInfo(playerId)
 
-        if (!isPlayerExistSS && !isPlayerExistBL) {
+        const playerDataSS = await Scoresaber.getplayerInfo(playerId)
+        const playerDataBL = await Beatleader.getplayerInfo(playerId)
+        const playerData = playerDataSS ? playerDataSS : playerDataBL
+
+        if (!playerData) {
             await interaction.editReply(SmallEmbed("❌ ┃ Your account does not exist on any leaderboard"))
-            return false
+            return
         }
 
         const addPlayer = await prisma.player.create({
@@ -52,6 +55,13 @@ export default {
             }
         })
 
-        await interaction.editReply(SmallEmbed("✅ ┃ Your account have been linked !"))
+        const linkedEmbed = new EmbedBuilder()
+            .setColor('#4cd639')
+            .setTitle(playerData.name)
+            .setURL(playerData.url)
+            .setThumbnail(playerData.avatar)
+            .setDescription(`Your account has been linked to your Discord account !\nRun </snipe add:1151622228639760468> command to add a player to snipe`)
+
+        await interaction.editReply({ embeds: [linkedEmbed] })
     }
 }

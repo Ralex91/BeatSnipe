@@ -13,8 +13,8 @@ const client = new Client({
 client.once('ready', async () => {
 
 	const commands = new Commands(client)
-	commands.load()
-	commands.listen()
+	await commands.load()
+	await commands.listen()
 
 	const events = new Events(client)
 	await events.load()

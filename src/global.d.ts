@@ -11,6 +11,7 @@ declare global {
     interface playerInfo {
         name: string
         id: string
+        url: string
         avatar: string
         pp: number
         rank: number
