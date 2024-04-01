@@ -1,9 +1,9 @@
+export default function isJsonString(str: string) {
+  try {
+    JSON.parse(str)
+  } catch (e) {
+    return false
+  }
 
-export default function (str: string) {
-    try {
-        JSON.parse(str)
-    } catch (e) {
-        return
-    }
-    return true
+  return true
 }

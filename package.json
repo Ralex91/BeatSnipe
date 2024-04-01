@@ -1,24 +1,25 @@
 {
-  "name": "scoresniper",
+  "name": "beatsnipe",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "I'm a bot that tracks the scores of the players you want to snipe to generate & auto-update playlists ",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "listener": "bun ./src/listener.ts",
+    "server": "bun ./src/server.ts"
   },
-  "author": "",
+  "author": "Ralex",
   "license": "ISC",
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.50",
     "@prisma/client": "^5.2.0",
     "body-parser": "^1.20.2",
-    "canvas": "^2.11.2",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "express-rate-limit": "^6.11.1",
-    "phin": "^3.7.0",
+    "express-rate-limit": "^7.1.5",
+    "phin": "3.7.0",
+    "prettier": "^3.2.5",
     "ws": "^8.14.1"
   },
   "devDependencies": {
@@ -29,6 +30,10 @@
     "@types/express-rate-limit": "^6.0.0",
     "@types/node": "^20.6.0",
     "@types/ws": "^8.5.5",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "nodemon": "^3.0.1",
     "prisma": "^5.2.0",
     "ts-node": "^10.9.1",

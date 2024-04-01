@@ -1,80 +1,108 @@
-import { PrismaClient } from '@prisma/client'
-import Scoresaber from './scoresaber'
-import Beatleader from './beatleader'
+import { PrismaClient } from "@prisma/client"
+import { PlayerScore } from "src/Types/player"
+import Beatleader from "./beatleader"
+import Scoresaber from "./scoresaber"
 
 const prisma = new PrismaClient()
 
-const addScores = async (snipeId: string, playerId: string, leaderboard: string, playerScores: playerScore[], playerToSnipeScores: playerScore[]) => {
-    let scoresToSnipe = []
+type AddScoresParams = {
+  snipeId: string
+  playerId: string
+  leaderboard: string
+  playerScores: PlayerScore[]
+  playerToSnipeScores: PlayerScore[]
+}
 
-    for (const s1 of playerToSnipeScores) {
-        if (playerScores.find(s2 => s1.songHash === s2.songHash && s1.difficulty === s2.difficulty && s2.score < s1.score)) {
-            scoresToSnipe.push({
-                name: s1.songName,
-                playerId: playerId,
-                snipeId: snipeId,
-                hash: s1.songHash,
-                leaderboard: leaderboard,
-                score: s1.score,
-                difficulty: s1.difficulty,
-                gamemode: "Standard"
-            })
-        }
+const addScores = async ({
+  snipeId,
+  playerId,
+  leaderboard,
+  playerScores,
+  playerToSnipeScores,
+}: AddScoresParams) => {
+  const scoresToSnipe = []
+
+  for (const s1 of playerToSnipeScores) {
+    if (
+      playerScores.find(
+        (s2) =>
+          s1.songHash === s2.songHash &&
+          s1.difficulty === s2.difficulty &&
+          s2.score < s1.score,
+      )
+    ) {
+      scoresToSnipe.push({
+        name: s1.songName,
+        playerId,
+        snipeId,
+        hash: s1.songHash,
+        leaderboard,
+        score: s1.score,
+        difficulty: s1.difficulty,
+        gamemode: "Standard",
+      })
     }
+  }
 
-    const addScore = await prisma.score.createMany({
-        data: scoresToSnipe.reverse(),
-        skipDuplicates: true
-    })
+  await prisma.score.createMany({
+    data: scoresToSnipe.reverse(),
+    skipDuplicates: true,
+  })
 }
 
 async function add(sniperId: string, playerId: string, leaderboard: string) {
-    const createSnipe = await prisma.snipe.create({
-        data: {
-            sniperId: sniperId,
-            playerId: playerId,
-            leaderboard: leaderboard,
-        }
-    })
+  const createSnipe = await prisma.snipe.create({
+    data: {
+      sniperId,
+      playerId,
+      leaderboard,
+    },
+  })
 
-    if (leaderboard.includes("scoresaber")) {
-        let playerScores = await Scoresaber.getPlayerScores(sniperId)
-        let playerToSnipeScores = await Scoresaber.getPlayerScores(playerId)
+  if (leaderboard.includes("scoresaber")) {
+    const playerScores = await Scoresaber.getPlayerScores(sniperId)
+    const playerToSnipeScores = await Scoresaber.getPlayerScores(playerId)
 
-        if (playerScores && playerToSnipeScores) {
-            await addScores(createSnipe.id, playerId, "scoresaber", playerScores, playerToSnipeScores)
-        }
+    if (playerScores && playerToSnipeScores) {
+      await addScores({
+        snipeId: createSnipe.id,
+        playerId,
+        leaderboard: "scoresaber",
+        playerScores,
+        playerToSnipeScores,
+      })
     }
+  }
 
-    if (leaderboard.includes("beatleader")) {
-        let playerScores = await Beatleader.getPlayerScores(sniperId)
-        let playerToSnipeScores = await Beatleader.getPlayerScores(playerId)
+  if (leaderboard.includes("beatleader")) {
+    const playerScores = await Beatleader.getPlayerScores(sniperId)
+    const playerToSnipeScores = await Beatleader.getPlayerScores(playerId)
 
-        if (playerScores && playerToSnipeScores) {
-            await addScores(createSnipe.id, playerId, "beatleader", playerScores, playerToSnipeScores)
-        }
+    if (playerScores && playerToSnipeScores) {
+      await addScores({
+        snipeId: createSnipe.id,
+        playerId,
+        leaderboard: "beatleader",
+        playerScores,
+        playerToSnipeScores,
+      })
     }
+  }
 
-    return createSnipe
+  return createSnipe
 }
 
 async function remove(snipeId: string) {
-    const deleteSnipeScores = await prisma.score.deleteMany({
-        where: {
-            snipeId: snipeId
-        }
-    })
+  await prisma.snipe.delete({
+    where: {
+      id: snipeId,
+    },
+  })
 
-    const deleteSnipe = await prisma.snipe.delete({
-        where: {
-            id: snipeId
-        }
-    })
-
-    return true
+  return true
 }
 
 export default {
-    add,
-    remove
+  add,
+  remove,
 }

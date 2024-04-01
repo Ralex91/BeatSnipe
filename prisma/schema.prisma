@@ -18,7 +18,7 @@ model Snipe {
     sniperId    String
     playerId    String
     leaderboard String
-    sniper      Player  @relation(fields: [sniperId], references: [id])
+    sniper      Player  @relation(fields: [sniperId], references: [id], onDelete: Cascade)
     scores      Score[]
 }
 
@@ -32,5 +32,5 @@ model Score {
     score       Int
     difficulty  String
     gamemode    String
-    snipe       Snipe  @relation(fields: [snipeId], references: [id])
+    snipe       Snipe  @relation(fields: [snipeId], references: [id], onDelete: Cascade)
 }

@@ -1,79 +1,75 @@
-import WebSocket from "ws";
-import Normalizer from "./Utils/normalizer.js";
-import Comparator from "./Controllers/comparator.js";
-import isJsonString from "./Utils/isJsonString.js";
+import { WebSocket } from "ws"
+import comparator from "./Controllers/comparator.js"
+import isJsonString from "./Utils/isJsonString.js"
+import Normalizer from "./Utils/normalizer.js"
 
 function startWebSocketSS() {
-    const ScoreSaber = new WebSocket("wss://scoresaber.com/ws");
+  const ScoreSaber = new WebSocket("wss://scoresaber.com/ws")
 
-    ScoreSaber.on("error", (err) => {
-        console.error(
-            "Socket encountered error: ",
-            err.message,
-            "Closing socket"
-        );
-        ScoreSaber.close();
-    });
+  ScoreSaber.on("error", (err) => {
+    console.error("Socket encountered error: ", err.message, "Closing socket")
+    ScoreSaber.close()
+  })
 
-    /*
-    ScoreSaber.on('open', function open() {
-        console.log('ScoreSaber connected')
-    })
-    */
+  //
+  // ScoreSaber.on('open', function open() {
+  //     console.log('ScoreSaber connected')
+  // })
+  //
 
-    ScoreSaber.on("message", async function message(data: string) {
-        if (!isJsonString(data)) return false; //console.log(data)
+  ScoreSaber.on("message", async (data: string) => {
+    if (!isJsonString(data)) {
+      return
+    }
 
-        let parseData = JSON.parse(data);
-        let score = await Normalizer.ScoreSaber(parseData.commandData);
+    const parseData = JSON.parse(data)
+    const score = await Normalizer.scoreSaber(parseData.commandData)
 
-        Comparator(score, "scoresaber");
-    });
+    comparator(score, "scoresaber")
+  })
 
-    ScoreSaber.on("close", () => {
-        //console.log("[SS] WebSocket closed")
+  ScoreSaber.on("close", () => {
+    //console.log("[SS] WebSocket closed")
 
-        setTimeout(function () {
-            startWebSocketSS();
-        }, 1000);
-    });
+    setTimeout(() => {
+      startWebSocketSS()
+    }, 1000)
+  })
 }
 
 function startWebSocketBL() {
-    const BeatLeader = new WebSocket("wss://sockets.api.beatleader.xyz/scores");
+  const BeatLeader = new WebSocket("wss://sockets.api.beatleader.xyz/scores")
 
-    BeatLeader.on("error", (err) => {
-        console.error(
-            "Socket encountered error: ",
-            err.message,
-            "Closing socket"
-        );
-        BeatLeader.close();
-    });
+  BeatLeader.on("error", (err) => {
+    console.error("Socket encountered error: ", err.message, "Closing socket")
+    BeatLeader.close()
+  })
 
-    /*
-    BeatLeader.on('open', function open() {
-        console.log('BeatLeader connected')
-    })
-    */
+  //
+  // BeatLeader.on('open', function open() {
+  //     console.log('BeatLeader connected')
+  // })
+  //
 
-    BeatLeader.on("close", () => {
-        //console.log("[BL] WebSocket closed")
+  BeatLeader.on("close", () => {
+    //console.log("[BL] WebSocket closed")
 
-        setTimeout(function () {
-            startWebSocketBL();
-        }, 1000);
-    });
+    setTimeout(() => {
+      startWebSocketBL()
+    }, 1000)
+  })
 
-    BeatLeader.on("message", async function message(data: string) {
-        if (!isJsonString(data)) return false; //console.log(data)
+  BeatLeader.on("message", (data: string) => {
+    if (!isJsonString(data)) {
+      return
+    }
 
-        let parseData = JSON.parse(data);
-        let score = Normalizer.BeatLeader(parseData);
+    const parseData = JSON.parse(data)
+    const score = Normalizer.beatLeader(parseData)
 
-        Comparator(score, "beatleader");
-    });
+    comparator(score, "beatleader")
+  })
 }
 
-startWebSocketSS();
-startWebSocketBL();
+startWebSocketSS()
+startWebSocketBL()

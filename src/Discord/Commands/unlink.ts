@@ -1,55 +1,50 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js'
-import { PrismaClient } from '@prisma/client'
-import Snipe from '../../Controllers/snipe'
-import SmallEmbed from '../Handlers/SmallEmbed'
+import { PrismaClient } from "@prisma/client"
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
+import smallEmbed from "../Handlers/smallEmbed"
 
 const prisma = new PrismaClient()
 
 export default {
-    data: new SlashCommandBuilder()
-        .setName('unlink')
-        .setDescription('Unlink your account id to BeatSnipe'),
+  data: new SlashCommandBuilder()
+    .setName("unlink")
+    .setDescription("Unlink your account id to BeatSnipe"),
 
-    async execute(interaction: ChatInputCommandInteraction) {
-        await interaction.deferReply({ ephemeral: true })
-        const discordId = interaction.user.id
+  async execute(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({ ephemeral: true })
+    const discordId = interaction.user.id
 
-        await interaction.editReply(SmallEmbed("<a:loading:1158674816136659006> ┃ Your unlink in progress ..."))
+    await interaction.editReply(
+      smallEmbed(
+        "<a:loading:1158674816136659006> ┃ Your unlink in progress ...",
+      ),
+    )
 
-        const player = await prisma.player.findUnique({
-            where: {
-                discordId: discordId
-            }
-        })
+    const player = await prisma.player.findUnique({
+      where: {
+        discordId,
+      },
+    })
 
-        if (!player) {
-            await interaction.editReply(SmallEmbed("❌ ┃ No account link! Link your account with </link:1151622228639760465>"))
-            return
-        }
+    if (!player) {
+      await interaction.editReply(
+        smallEmbed(
+          "❌ ┃ No account link! Link your account with </link:1151622228639760465>",
+        ),
+      )
 
-        const snipes = await prisma.snipe.findMany({
-            where: {
-                sniper: {
-                    discordId: discordId
-                }
-            },
-            select: {
-                id: true,
-            }
-        })
-
-        if (snipes) {
-            for (const snipe of snipes) {
-                await Snipe.remove(snipe.id)
-            }
-        }
-
-        const deleteLink = await prisma.player.delete({
-            where: {
-                discordId: discordId
-            }
-        })
-
-        await interaction.editReply(SmallEmbed("✅ ┃ Your account has been unlink and sniped/playlist players have been deleted"))
+      return
     }
+
+    await prisma.player.delete({
+      where: {
+        discordId,
+      },
+    })
+
+    await interaction.editReply(
+      smallEmbed(
+        "✅ ┃ Your account has been unlink and sniped/playlist players have been deleted",
+      ),
+    )
+  },
 }
