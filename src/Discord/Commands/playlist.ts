@@ -4,8 +4,9 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
 } from "discord.js"
+import sanitize from "sanitize-filename"
 import { PlayerInfo } from "src/Types/player"
-import Beatleader from "../../Controllers/beatleader"
+import beatleader from "../../Controllers/beatleader"
 import scoresaber from "../../Controllers/scoresaber"
 import playlist from "../../Utils/playlist"
 import smallEmbed from "../Handlers/SmallEmbed"
@@ -26,7 +27,7 @@ export default {
         .setDescription("Leaderboard scores")
         .addChoices(
           { name: "scoresaber", value: "scoresaber" },
-          { name: "Beatleader", value: "Beatleader" },
+          { name: "beatleader", value: "beatleader" },
         )
         .setRequired(true),
     ),
@@ -98,8 +99,8 @@ export default {
       playerInfo = await scoresaber.getPlayerInfo(playerId)
     }
 
-    if (leaderboard === "Beatleader") {
-      playerInfo = await Beatleader.getPlayerInfo(playerId)
+    if (leaderboard === "beatleader") {
+      playerInfo = await beatleader.getPlayerInfo(playerId)
     }
 
     if (!playerInfo) {
@@ -119,7 +120,9 @@ export default {
     const playlistContent = await playlist(leaderboard, snipe.id)
     const attachment = new AttachmentBuilder(
       Buffer.from(JSON.stringify(playlistContent)),
-      { name: `${playerInfo.name}_Snipe_playlist_${leaderboard}.bplist` },
+      {
+        name: `${sanitize(playerInfo.name)}_snipe_playlist_${leaderboard}.bplist`,
+      },
     )
 
     await interaction.editReply({

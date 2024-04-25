@@ -20,6 +20,7 @@
     "express-rate-limit": "^7.1.5",
     "phin": "^3.7.1",
     "prettier": "^3.2.5",
+    "sanitize-filename": "^1.6.3",
     "ws": "^8.14.1"
   },
   "devDependencies": {
