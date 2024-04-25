@@ -250,7 +250,7 @@ export default {
           },
         })
 
-        Snipe.add(sniper.id, snipe.playerId, snipe.leaderboard, snipe.id)
+        await Snipe.add(sniper.id, snipe.playerId, snipe.leaderboard, snipe.id)
 
         await interaction.editReply(
           smallEmbed("✅ ┃ The player scores has been refresh!"),
