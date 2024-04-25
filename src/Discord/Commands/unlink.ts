@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
-import smallEmbed from "../Handlers/smallEmbed"
+import smallEmbed from "../Handlers/SmallEmbed"
 
 const prisma = new PrismaClient()
 

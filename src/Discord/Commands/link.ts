@@ -6,7 +6,7 @@ import {
 } from "discord.js"
 import Beatleader from "../../Controllers/beatleader"
 import Scoresaber from "../../Controllers/scoresaber"
-import smallEmbed from "../Handlers/smallEmbed"
+import smallEmbed from "../Handlers/SmallEmbed"
 
 const prisma = new PrismaClient()
 

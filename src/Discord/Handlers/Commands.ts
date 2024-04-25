@@ -8,7 +8,7 @@ import {
 } from "discord.js"
 import * as fs from "node:fs"
 import { resolve } from "node:path"
-import smallEmbed from "./smallEmbed"
+import smallEmbed from "./SmallEmbed"
 
 interface Command extends ApplicationCommand {
   allowedChannels?: string[]

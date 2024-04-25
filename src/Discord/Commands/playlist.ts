@@ -8,7 +8,7 @@ import { PlayerInfo } from "src/Types/player"
 import Beatleader from "../../Controllers/beatleader"
 import scoresaber from "../../Controllers/scoresaber"
 import playlist from "../../Utils/playlist"
-import smallEmbed from "../Handlers/smallEmbed"
+import smallEmbed from "../Handlers/SmallEmbed"
 
 const prisma = new PrismaClient()
 const cooldown = new Set()
