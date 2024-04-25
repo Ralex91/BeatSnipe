@@ -121,7 +121,7 @@ export default {
     const attachment = new AttachmentBuilder(
       Buffer.from(JSON.stringify(playlistContent)),
       {
-        name: `${sanitize(playerInfo.name)}_snipe_playlist_${leaderboard}.bplist`,
+        name: `${sanitize(playerInfo.name)}_snipe_${leaderboard}.bplist`,
       },
     )
 
