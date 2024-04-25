@@ -223,7 +223,7 @@ export default {
         if (cooldownRefresh.has(discordId)) {
           await interaction.editReply(
             smallEmbed(
-              "⏱ ┃ You have to wait 10 minutes before you can use this command again",
+              "⏱ ┃ You have to wait 1 minutes before you can use this command again",
             ),
           )
 
@@ -258,7 +258,7 @@ export default {
 
         setTimeout(() => {
           cooldownRefresh.delete(discordId)
-        }, 10 * 60000)
+        }, 60000)
 
         break
       }
