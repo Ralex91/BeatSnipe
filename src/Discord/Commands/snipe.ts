@@ -7,6 +7,7 @@ import smallEmbed from "../Handlers/smallEmbed"
 
 const prisma = new PrismaClient()
 const cooldownAdd = new Set()
+const cooldownRefresh = new Set()
 const cooldownRemove = new Set()
 
 export default {
@@ -35,6 +36,17 @@ export default {
                 value: "scoresaber,beatleader",
               },
             )
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("refresh")
+        .setDescription("Refresh the player scores")
+        .addStringOption((option) =>
+          option
+            .setName("player")
+            .setDescription("Player ID")
             .setRequired(true),
         ),
     )
@@ -90,6 +102,9 @@ export default {
       },
       select: {
         id: true,
+        playerId: true,
+        sniperId: true,
+        leaderboard: true,
       },
     })
 
@@ -204,11 +219,55 @@ export default {
         break
       }
 
+      case "refresh": {
+        if (cooldownRefresh.has(discordId)) {
+          await interaction.editReply(
+            smallEmbed(
+              "⏱ ┃ You have to wait 10 minutes before you can use this command again",
+            ),
+          )
+
+          return
+        }
+
+        if (!snipe) {
+          await interaction.editReply(
+            smallEmbed("❌ ┃ You didn't snipe at this player"),
+          )
+
+          return
+        }
+
+        await interaction.editReply(
+          smallEmbed(
+            "<a:loading:1158674816136659006> ┃ Refresh player scores ...",
+          ),
+        )
+
+        await prisma.score.deleteMany({
+          where: {
+            snipeId: snipe.id,
+          },
+        })
+
+        Snipe.add(sniper.id, snipe.playerId, snipe.leaderboard, snipe.id)
+
+        await interaction.editReply(
+          smallEmbed("✅ ┃ The player scores has been refresh!"),
+        )
+
+        setTimeout(() => {
+          cooldownRefresh.delete(discordId)
+        }, 10 * 60000)
+
+        break
+      }
+
       case "remove": {
         if (cooldownRemove.has(discordId)) {
           await interaction.editReply(
             smallEmbed(
-              "❌ ┃ You have to wait 1 minutes before you can use this command again",
+              "⏱ ┃ You have to wait 1 minutes before you can use this command again",
             ),
           )
 

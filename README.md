@@ -38,7 +38,7 @@
 - ### Config for .env
   ```env
   WEB_PORT=5055
-  DISPLAY_VERSION="1.1.1"
+  DISPLAY_VERSION="1.2.0"
   DISCORD_INVITE="https://discord.gg/zw9GCxnc8A"
   DISCORD_TOKEN="XXXXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXX"
   DATABASE_URL="mysql://username:password@127.0.0.1:3306/database?schema=public"

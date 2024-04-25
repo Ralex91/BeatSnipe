@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { PlayerScore } from "src/Types/player"
-import Beatleader from "./beatleader"
-import Scoresaber from "./scoresaber"
+import beatleader from "./beatleader"
+import scoresaber from "./scoresaber"
 
 const prisma = new PrismaClient()
 
@@ -50,22 +50,43 @@ const addScores = async ({
   })
 }
 
-async function add(sniperId: string, playerId: string, leaderboard: string) {
-  const createSnipe = await prisma.snipe.create({
-    data: {
-      sniperId,
-      playerId,
-      leaderboard,
-    },
-  })
+async function add(
+  sniperId: string,
+  playerId: string,
+  leaderboard: string,
+  snipeId?: string,
+) {
+  let snipe = null
+
+  if (snipeId) {
+    snipe = await prisma.snipe.findUnique({
+      where: {
+        id: snipeId,
+      },
+    })
+  } else {
+    snipe = await prisma.snipe.create({
+      data: {
+        sniperId,
+        playerId,
+        leaderboard,
+      },
+    })
+  }
+
+  if (!snipe) {
+    console.log("Could not create/refresh snipe")
+
+    return false
+  }
 
   if (leaderboard.includes("scoresaber")) {
-    const playerScores = await Scoresaber.getPlayerScores(sniperId)
-    const playerToSnipeScores = await Scoresaber.getPlayerScores(playerId)
+    const playerScores = await scoresaber.getPlayerScores(sniperId)
+    const playerToSnipeScores = await scoresaber.getPlayerScores(playerId)
 
     if (playerScores && playerToSnipeScores) {
       await addScores({
-        snipeId: createSnipe.id,
+        snipeId: snipe.id,
         playerId,
         leaderboard: "scoresaber",
         playerScores,
@@ -75,12 +96,12 @@ async function add(sniperId: string, playerId: string, leaderboard: string) {
   }
 
   if (leaderboard.includes("beatleader")) {
-    const playerScores = await Beatleader.getPlayerScores(sniperId)
-    const playerToSnipeScores = await Beatleader.getPlayerScores(playerId)
+    const playerScores = await beatleader.getPlayerScores(sniperId)
+    const playerToSnipeScores = await beatleader.getPlayerScores(playerId)
 
     if (playerScores && playerToSnipeScores) {
       await addScores({
-        snipeId: createSnipe.id,
+        snipeId: snipe.id,
         playerId,
         leaderboard: "beatleader",
         playerScores,
@@ -89,7 +110,7 @@ async function add(sniperId: string, playerId: string, leaderboard: string) {
     }
   }
 
-  return createSnipe
+  return snipe
 }
 
 async function remove(snipeId: string) {
@@ -105,4 +126,5 @@ async function remove(snipeId: string) {
 export default {
   add,
   remove,
+  addScores,
 }
