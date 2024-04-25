@@ -10,7 +10,7 @@ export default async function playlist(req: Request, res: Response) {
     return res.status(401).json({ code: 401, message: "Unauthorized" })
   }
 
-  if (userAgent.includes("PlaylistManager")) {
+  if (!userAgent.includes("PlaylistManager")) {
     return res.status(401).json({ code: 401, message: "Unauthorized" })
   }
 
