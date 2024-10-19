@@ -75,7 +75,7 @@ export default {
       },
       fields: [],
       footer: {
-        text: `BeatSnipe v${process.env.DISPLAY_VERSION}`,
+        text: `BeatSnipe v${process.env.npm_package_version}`,
         //icon_url: client.user?.displayAvatarURL(),
       },
     }
