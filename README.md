@@ -18,15 +18,55 @@
 
 ## 🛠 Installation
 
-- ### Install Bun
+- ### Install dependencies
 
-  https://bun.sh/docs/installation
+  - Install bun
+
+    ```bash
+    curl -fsSL https://bun.sh/install | bash
+    ```
+
+    Other operating systems check [here](https://bun.sh/docs/installation) for installation.
+
+  - Install pm2
+    ```
+    bun install -g pm2
+    ```
 
 - ### Retrieve dependencies
 
   ```bash
   bun install
   ```
+
+- ### Setup docker compose
+
+  - Copy `docker-compose.example.yml` to `docker-compose.yml`
+    ```
+    cp docker-compose.example.yml docker-compose.yml
+    ```
+  - Edit `docker-compose.yml`
+
+    Modify container configuration if necessary
+
+    > ⚠️ Don't forget to change the default password for mariadb container
+
+  - Run
+    ```bash
+    docker-compose up -d
+    ```
+
+- ### Config environment
+
+  - Copy `.env.example` to `.env`
+    ```
+    cp .env.example .env
+    ```
+  - Edit `.env`
+
+    Modify .env if necessary
+
+    > ⚠️ Don't forget to change mysql connection string with your mariadb container password
 
 - ### Init Prisma ORM
 
@@ -35,14 +75,32 @@
   bunx prisma db push
   ```
 
-- ### Config for .env
-  ```env
-  WEB_PORT=5055
-  DISPLAY_VERSION="1.2.0"
-  DISCORD_INVITE="https://discord.gg/zw9GCxnc8A"
-  DISCORD_TOKEN="XXXXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXX"
-  DATABASE_URL="mysql://username:password@127.0.0.1:3306/database?schema=public"
-  ```
+- ### Run BeatSnipe
+
+  - Run Independently
+
+    Server (api, discord bot)
+
+    ```bash
+    bunx run server
+    ```
+
+    Score listener
+
+    ```
+    bunx run listener
+    ```
+
+  - Run all and in background
+
+    ```bash
+    bunx run deploy
+    ```
+
+  - Stop all
+    ```bash
+    bunx run down
+    ```
 
 <br>
 <hr>
