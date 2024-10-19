@@ -102,9 +102,26 @@
     bunx run down
     ```
 
-<br>
-<hr>
-<br>
+## 💾 Manage database
+
+Get container name of mariadb
+
+Example: `beatsnipe-mariadb-1`
+
+```bash
+docker ps
+```
+
+- ### Backup database
+
+```bash
+docker exec <CONTAINER_NAME> mariadb -u root -p<DB_PASSWORD_HERE> beatsnipe > beatsnipe_backup.sql
+```
+
+- ### Restore database
+  ```bash
+  docker exec <CONTAINER_NAME> mariadb -u root -p<DB_PASSWORD_HERE> beatsnipe < beatsnipe_backuped.sql
+  ```
 
 ## 📔 How do I add a player to BeatSnipe and create a playlist?
 
