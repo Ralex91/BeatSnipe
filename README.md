@@ -28,11 +28,6 @@
 
     Other operating systems check [here](https://bun.sh/docs/installation) for installation.
 
-  - Install pm2
-    ```
-    bun install -g pm2
-    ```
-
 - ### Retrieve dependencies
 
   ```bash
