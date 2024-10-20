@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: NO_SECURE_PASSWORD_PLEASE_DO_NOT_USE
+      MYSQL_DATABASE: beatsnipe
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mariadb
+    ports:
+      - "8080:80"
+    depends_on:
+      - mariadb
