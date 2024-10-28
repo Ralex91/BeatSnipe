@@ -1,7 +1,8 @@
-import beatleader from "@/Controllers/beatleader"
-import scoresaber from "@/Controllers/scoresaber"
-import smallEmbed from "@/Discord/Handlers/SmallEmbed"
-import playlist from "@/Utils/playlist"
+import smallEmbed from "@/discord/handlers/smallEmbed"
+import beatleader from "@/libs/beatleader"
+import scoresaber from "@/libs/scoresaber"
+import { PlayerInfo } from "@/types/player"
+import playlist from "@/utils/playlist"
 import { PrismaClient } from "@prisma/client"
 import {
   AttachmentBuilder,
@@ -9,7 +10,6 @@ import {
   SlashCommandBuilder,
 } from "discord.js"
 import sanitize from "sanitize-filename"
-import { PlayerInfo } from "src/Types/player"
 
 const prisma = new PrismaClient()
 const cooldown = new Set()

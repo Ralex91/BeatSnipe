@@ -1,4 +1,4 @@
-import smallEmbed from "@/Discord/Handlers/SmallEmbed"
+import smallEmbed from "@/discord/handlers/smallEmbed"
 import {
   ApplicationCommand,
   ApplicationCommandOptionType,
@@ -67,12 +67,12 @@ export default class Commands {
   async load() {
     const commands = []
     const commandFiles = fs
-      .readdirSync(resolve(__dirname, "../Commands"))
+      .readdirSync(resolve(__dirname, "../commands"))
       .filter((file) => file.endsWith(".ts"))
 
     for (const file of commandFiles) {
       // eslint-disable-next-line no-await-in-loop
-      const { default: command } = await import(`../Commands/${file}`)
+      const { default: command } = await import(`../commands/${file}`)
       commands.push(command.data)
       this.commands.set(command.data.name, command)
     }

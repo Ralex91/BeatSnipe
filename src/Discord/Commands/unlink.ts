@@ -1,4 +1,4 @@
-import smallEmbed from "@/Discord/Handlers/SmallEmbed"
+import smallEmbed from "@/discord/handlers/smallEmbed"
 import { PrismaClient } from "@prisma/client"
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 

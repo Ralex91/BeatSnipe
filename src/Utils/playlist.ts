@@ -1,8 +1,8 @@
-import beatleader from "@/Controllers/beatleader"
-import scoresaber from "@/Controllers/scoresaber"
-import { PlayerInfo } from "@/Types/player"
-import { Playlist } from "@/Types/playlist"
-import cover from "@/Utils/cover"
+import beatleader from "@/libs/beatleader"
+import scoresaber from "@/libs/scoresaber"
+import { PlayerInfo } from "@/types/player"
+import { Playlist } from "@/types/playlist"
+import cover from "@/utils/cover"
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()

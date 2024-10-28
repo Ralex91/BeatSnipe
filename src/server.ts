@@ -4,8 +4,8 @@ import cors from "cors"
 import "dotenv/config"
 import express, { Request, Response } from "express"
 
-import { apiRouter } from "@/Api/router"
-import "@/Discord/discord"
+import { apiRouter } from "@/api/router"
+import "@/discord/discord"
 
 const app = express()
 

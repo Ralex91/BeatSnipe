@@ -1,7 +1,7 @@
-import beatleader from "@/Controllers/beatleader"
-import scoresaber from "@/Controllers/scoresaber"
-import Snipe from "@/Controllers/snipe"
-import smallEmbed from "@/Discord/Handlers/SmallEmbed"
+import Snipe from "@/controllers/snipe"
+import smallEmbed from "@/discord/handlers/smallEmbed"
+import beatleader from "@/libs/beatleader"
+import scoresaber from "@/libs/scoresaber"
 import { PrismaClient } from "@prisma/client"
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 

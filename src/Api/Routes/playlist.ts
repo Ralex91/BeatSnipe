@@ -1,5 +1,5 @@
+import playlistMaker from "@/utils/playlist"
 import { Request, Response } from "express"
-import playlistMaker from "@/Utils/playlist"
 
 const leaderboardList = ["scoresaber", "beatleader"]
 

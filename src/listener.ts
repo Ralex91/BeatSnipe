@@ -1,6 +1,6 @@
-import comparator from "@/Controllers/comparator.js"
-import isJsonString from "@/Utils/isJsonString.js"
-import Normalizer from "@/Utils/normalizer.js"
+import comparator from "@/controllers/comparator.js"
+import isJsonString from "@/libs/isJsonString.js"
+import Normalizer from "@/utils/normalizer.js"
 import { WebSocket } from "ws"
 
 function startWebSocketSS() {

@@ -1,5 +1,5 @@
-import playlist from "@/Api/Routes/playlist"
-import { rateLimit } from "@/Controllers/ratelimit"
+import playlist from "@/api/routes/playlist"
+import { rateLimit } from "@/controllers/ratelimit"
 import { Router } from "express"
 
 // Api Page router

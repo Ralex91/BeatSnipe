@@ -11,12 +11,12 @@ export default class Events {
 
   async load() {
     const eventFiles = fs
-      .readdirSync(path.join(__dirname, "../Events"))
+      .readdirSync(path.join(__dirname, "../events"))
       .filter((file) => file.endsWith(".js"))
 
     for (const file of eventFiles) {
       // eslint-disable-next-line no-await-in-loop
-      const { default: event } = await import(`../Events/${file}`)
+      const { default: event } = await import(`../events/${file}`)
 
       if (event.disabled) {
         return
