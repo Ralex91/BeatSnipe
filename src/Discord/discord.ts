@@ -1,3 +1,4 @@
+import packageJson from "@package"
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 import "dotenv/config"
 import Commands from "./Handlers/Commands"
@@ -15,7 +16,7 @@ client.once("ready", async () => {
   //const events = new Events(client)
   //await events.load()
 
-  client.user?.setActivity(`Version ${process.env.npm_package_version}`, {
+  client.user?.setActivity(`Version ${packageJson.version}`, {
     type: ActivityType.Watching,
   })
   console.log(`Logged in as ${client.user?.tag as string}!`)

@@ -1,11 +1,11 @@
-import express, { Request, Response } from "express"
 import bodyParser from "body-parser"
-import cors from "cors"
 import compression from "compression"
+import cors from "cors"
 import "dotenv/config"
+import express, { Request, Response } from "express"
 
-import { apiRouter } from "./Api/router"
-import "./Discord/discord"
+import { apiRouter } from "@/Api/router"
+import "@/Discord/discord"
 
 const app = express()
 

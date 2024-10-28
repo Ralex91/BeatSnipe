@@ -1,6 +1,6 @@
+import playlist from "@/Api/Routes/playlist"
+import { rateLimit } from "@/Controllers/ratelimit"
 import { Router } from "express"
-import { rateLimit } from "../Controllers/ratelimit"
-import playlist from "./Routes/playlist"
 
 // Api Page router
 // eslint-disable-next-line new-cap

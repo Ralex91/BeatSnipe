@@ -1,9 +1,9 @@
+import beatleader from "@/Controllers/beatleader"
+import scoresaber from "@/Controllers/scoresaber"
+import Snipe from "@/Controllers/snipe"
+import smallEmbed from "@/Discord/Handlers/SmallEmbed"
 import { PrismaClient } from "@prisma/client"
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
-import beatleader from "../../Controllers/beatleader"
-import scoresaber from "../../Controllers/scoresaber"
-import Snipe from "../../Controllers/snipe"
-import smallEmbed from "../Handlers/SmallEmbed"
 
 const prisma = new PrismaClient()
 const cooldownAdd = new Set()

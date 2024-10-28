@@ -1,3 +1,4 @@
+import packageJson from "@package"
 import { PrismaClient } from "@prisma/client"
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 import { PlayerInfo } from "src/Types/player"
@@ -75,7 +76,7 @@ export default {
       },
       fields: [],
       footer: {
-        text: `BeatSnipe v${process.env.npm_package_version}`,
+        text: `BeatSnipe v${packageJson.version}`,
         //icon_url: client.user?.displayAvatarURL(),
       },
     }

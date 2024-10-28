@@ -1,8 +1,8 @@
+import Beatleader from "@/Controllers/beatleader"
+import Scoresaber from "@/Controllers/scoresaber"
+import { Comparator } from "@/Types/comparator"
+import { PlayerInfo } from "@/Types/player"
 import { PrismaClient } from "@prisma/client"
-import { Comparator } from "src/Types/comparator"
-import { PlayerInfo } from "src/Types/player"
-import Beatleader from "./beatleader"
-import Scoresaber from "./scoresaber"
 
 const shortName = (leaderboard: string) => {
   if (leaderboard === "scoresaber") {
