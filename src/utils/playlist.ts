@@ -1,9 +1,9 @@
+import beatleader from "@/libs/beatleader"
+import scoresaber from "@/libs/scoresaber"
+import { PlayerInfo } from "@/types/player"
+import { Playlist } from "@/types/playlist"
+import cover from "@/utils/cover"
 import { PrismaClient } from "@prisma/client"
-import { PlayerInfo } from "src/Types/player"
-import { Playlist } from "src/Types/playlist"
-import beatleader from "../Controllers/beatleader"
-import scoresaber from "../Controllers/scoresaber"
-import cover from "./cover"
 
 const prisma = new PrismaClient()
 
@@ -53,7 +53,7 @@ export default async function playlistMaker(
     playlistTitle: `Snippe playlist ${leaderboard} of ${playerInfo.name}`,
     playlistAuthor: "BeatSnipe",
     customData: {
-      syncURL: `https://beatsnipe.ralex.app/api/playlist/${leaderboard}/${snipeInfo.id}`,
+      syncURL: `${process.env.PUBLIC_URL}/api/playlist/${leaderboard}/${snipeInfo.id}`,
     },
     songs: [],
     image: `base64,${playlistCover}`,

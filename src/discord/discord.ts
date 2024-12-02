@@ -1,7 +1,8 @@
+import Commands from "@/discord/handlers/commands"
+import packageJson from "@package"
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 import "dotenv/config"
-import Commands from "./Handlers/Commands"
-//import Events from "./Handlers/events"
+//import events from "@/discord/handlers/events"
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
@@ -12,10 +13,10 @@ client.once("ready", async () => {
   await commands.load()
   await commands.listen()
 
-  //const events = new Events(client)
+  //const events = new events(client)
   //await events.load()
 
-  client.user?.setActivity(`Version ${process.env.npm_package_version}`, {
+  client.user?.setActivity(`Version ${packageJson.version}`, {
     type: ActivityType.Watching,
   })
   console.log(`Logged in as ${client.user?.tag as string}!`)

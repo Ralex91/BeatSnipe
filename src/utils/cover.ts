@@ -14,9 +14,9 @@ export default async function cover(avatarURL: string, leaderboard: string) {
   const ct = cv.getContext("2d")
   const avatarBuf = await bufferImage(avatarURL)
   const avatar = await loadImage(avatarBuf)
-  const scope = await loadImage(path.join(__dirname, "../Assets/scope.png"))
+  const scope = await loadImage(path.join(__dirname, "../assets/scope.png"))
   const leaderboardIcon = await loadImage(
-    path.join(__dirname, `../Assets/${leaderboard}.png`),
+    path.join(__dirname, `../assets/${leaderboard}.png`),
   )
   ct.shadowColor = "#212121"
   ct.shadowBlur = 4

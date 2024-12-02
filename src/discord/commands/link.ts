@@ -1,12 +1,12 @@
+import smallEmbed from "@/discord/handlers/smallEmbed"
+import Beatleader from "@/libs/beatleader"
+import Scoresaber from "@/libs/scoresaber"
 import { PrismaClient } from "@prisma/client"
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js"
-import Beatleader from "../../Controllers/beatleader"
-import Scoresaber from "../../Controllers/scoresaber"
-import smallEmbed from "../Handlers/SmallEmbed"
 
 const prisma = new PrismaClient()
 
