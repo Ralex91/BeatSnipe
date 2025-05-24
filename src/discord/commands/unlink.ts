@@ -1,5 +1,5 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import db from "@/utils/db"
+import { PlayerRepository } from "@/repositories/player.repository"
 import {
   ChatInputCommandInteraction,
   MessageFlags,
@@ -21,11 +21,7 @@ export default {
       ),
     )
 
-    const player = await db.player.findUnique({
-      where: {
-        discordId,
-      },
-    })
+    const player = await PlayerRepository.getByDiscordId(discordId)
 
     if (!player) {
       await interaction.editReply(
@@ -37,11 +33,7 @@ export default {
       return
     }
 
-    await db.player.delete({
-      where: {
-        discordId,
-      },
-    })
+    await PlayerRepository.delete(player.discordId)
 
     await interaction.editReply(
       smallEmbed(

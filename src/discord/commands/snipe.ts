@@ -1,10 +1,11 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
+import { PlayerRepository } from "@/repositories/player.repository"
+import { ScoreRepository } from "@/repositories/score.repository"
 import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { SnipeService } from "@/services/snipe.service"
 import { LEADERBOARD } from "@/utils/contantes"
-import db from "@/utils/db"
 import {
   ChatInputCommandInteraction,
   MessageFlags,
@@ -72,14 +73,7 @@ export default {
     const discordId = interaction.user.id
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-    const sniper = await db.player.findFirst({
-      where: {
-        discordId,
-      },
-      select: {
-        id: true,
-      },
-    })
+    const sniper = await PlayerRepository.getByDiscordId(discordId)
 
     if (!sniper) {
       await interaction.editReply(
@@ -243,11 +237,7 @@ export default {
           ),
         )
 
-        await db.score.deleteMany({
-          where: {
-            snipeId: snipe.id,
-          },
-        })
+        await ScoreRepository.deleteBySnipeId(snipe.id)
 
         await SnipeService.add(
           snipe.sniperId,

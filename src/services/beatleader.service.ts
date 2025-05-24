@@ -1,10 +1,15 @@
 import wait from "@/libs/wait"
-import ky from "ky"
+import {
+  GetPlayerInfoBL,
+  GetPlayerScoreMapBL,
+  GetPlayerScoresBL,
+} from "@/types/beatleader"
+import { fetch } from "@/utils/fetch"
 
 export class BeatLeaderService {
   static async getPlayerInfo(playerId: string) {
     try {
-      const playerData: any = await ky.get(
+      const reponse = await fetch.get<GetPlayerInfoBL>(
         `https://api.beatleader.xyz/player/${playerId}`,
         {
           searchParams: {
@@ -14,11 +19,11 @@ export class BeatLeaderService {
         },
       )
 
-      if (playerData.status !== 200) {
+      if (reponse.status !== 200) {
         return false
       }
 
-      const data = await playerData.json()
+      const data = await reponse.json()
 
       return {
         name: data.name,
@@ -47,11 +52,11 @@ export class BeatLeaderService {
 
     while (true) {
       try {
-        const getScore: any = await ky.get(
+        const reponse = await fetch<GetPlayerScoreMapBL>(
           `https://api.beatleader.xyz/player/${playerId}/scorevalue/${hash}/${difficulty}/${gamemode}`,
         )
 
-        if (getScore.status === 429) {
+        if (reponse.status === 429) {
           console.log(`Rate limited, waiting ${retryDelay}ms...`)
           await wait(retryDelay)
           retryDelay = Math.min(retryDelay * 2, 30000)
@@ -59,11 +64,11 @@ export class BeatLeaderService {
           continue
         }
 
-        if (getScore.status !== 200) {
+        if (reponse.status !== 200) {
           return false
         }
 
-        const data = await getScore.json()
+        const data = await reponse.json()
 
         return data.score
       } catch (error: any) {
@@ -89,7 +94,7 @@ export class BeatLeaderService {
 
     do {
       try {
-        const data: any = await ky.get(
+        const response = await fetch<GetPlayerScoresBL>(
           `https://api.beatleader.xyz/player/${beatLeaderId}/scores`,
           {
             searchParams: {
@@ -101,7 +106,7 @@ export class BeatLeaderService {
           },
         )
 
-        if (data.status === 429) {
+        if (response.status === 429) {
           console.log(`Rate limited, waiting ${retryDelay}ms...`)
           await wait(retryDelay)
           retryDelay = Math.min(retryDelay * 2, 30000)
@@ -109,13 +114,15 @@ export class BeatLeaderService {
           continue
         }
 
-        if (data.status !== 200) {
+        if (response.status !== 200) {
           return false
         }
 
         retryDelay = 1000
 
-        const { metadata, data: playerScores } = await data.json()
+        const data: GetPlayerScoresBL = await response.json()
+        const { metadata, data: playerScores } = data
+
         for (const playerScore of playerScores) {
           scores.push({
             songName: playerScore.leaderboard.song.name,
@@ -124,6 +131,7 @@ export class BeatLeaderService {
             difficulty: playerScore.leaderboard.difficulty.difficultyName,
           })
         }
+
         nextPage =
           metadata.page + 1 <= Math.ceil(metadata.total / metadata.itemsPerPage)
             ? metadata.page + 1

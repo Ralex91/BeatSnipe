@@ -1,11 +1,11 @@
-import ky from "ky"
+import { fetch } from "./fetch"
 //
 //  getMapMaxScore, calcAcc:
 //  https://github.com/Hei5enberg44/BSFR-Cube-Stalker/blob/master/controllers/top1.js
 //
 
 async function getMapDetails(hash: string) {
-  const mapDetails = await ky
+  const mapDetails = await fetch
     .get(`https://beatsaver.com/api/maps/hash/${hash}`)
     .json()
 

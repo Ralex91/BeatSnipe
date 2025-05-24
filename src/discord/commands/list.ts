@@ -1,10 +1,10 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
+import { PlayerRepository } from "@/repositories/player.repository"
 import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
 import { LEADERBOARD } from "@/utils/contantes"
-import db from "@/utils/db"
 import packageJson from "@package"
 import {
   ChatInputCommandInteraction,
@@ -37,14 +37,7 @@ export default {
     const discordId = interaction.user.id
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-    const getSniperId = await db.player.findFirst({
-      where: {
-        discordId,
-      },
-      select: {
-        id: true,
-      },
-    })
+    const getSniperId = await PlayerRepository.getByDiscordId(discordId)
 
     if (!getSniperId) {
       await interaction.editReply(

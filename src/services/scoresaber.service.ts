@@ -1,5 +1,10 @@
 import wait from "@/libs/wait"
-import ky from "ky"
+import {
+  GetPlayerInfoSS,
+  GetPlayerScoreMapSS,
+  GetPlayerScoresSS,
+} from "@/types/scoresaber"
+import { fetch } from "@/utils/fetch"
 
 export class ScoreSaberService {
   private static readonly DifficultyId: { [code: string]: number } = {
@@ -16,15 +21,15 @@ export class ScoreSaberService {
     )
 
   static async getPlayerInfo(playerId: string) {
-    const playerData: any = await ky.get(
+    const response = await fetch.get<GetPlayerInfoSS>(
       `https://scoresaber.com/api/player/${playerId}/basic/`,
     )
 
-    if (playerData.status !== 200) {
+    if (response.status !== 200) {
       return false
     }
 
-    const data = await playerData.json()
+    const data = await response.json()
 
     return {
       name: data.name,
@@ -44,7 +49,7 @@ export class ScoreSaberService {
     difficulty: string,
     gamemode: string,
   ) {
-    const getScore: any = await ky.get(
+    const response = await fetch.get<GetPlayerScoreMapSS>(
       `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores`,
       {
         searchParams: {
@@ -55,11 +60,11 @@ export class ScoreSaberService {
       },
     )
 
-    if (getScore.status !== 200) {
+    if (response.status !== 200) {
       return false
     }
 
-    const data = await getScore.json()
+    const data = await response.json()
 
     return data.scores[0].modifiedScore
   }
@@ -71,7 +76,7 @@ export class ScoreSaberService {
 
     do {
       try {
-        const rawPlayerScores: any = await ky.get(
+        const response = await fetch.get<GetPlayerScoresSS>(
           `https://scoresaber.com/api/player/${scoreSaberId}/scores`,
           {
             searchParams: {
@@ -82,7 +87,7 @@ export class ScoreSaberService {
           },
         )
 
-        if (rawPlayerScores.status === 429) {
+        if (response.status === 429) {
           console.log(`Rate limited, waiting ${retryDelay}ms...`)
           await wait(retryDelay)
           retryDelay = Math.min(retryDelay * 2, 30000)
@@ -90,13 +95,14 @@ export class ScoreSaberService {
           continue
         }
 
-        if (rawPlayerScores.status !== 200) {
+        if (response.status !== 200) {
           return false
         }
 
         retryDelay = 1000
+        const data: GetPlayerScoresSS = await response.json()
+        const { playerScores, metadata } = data
 
-        const { metadata, playerScores } = await rawPlayerScores.json()
         for (const playerScore of playerScores) {
           scores.push({
             songName: playerScore.leaderboard.songName,
@@ -106,6 +112,7 @@ export class ScoreSaberService {
               this.Difficulty[playerScore.leaderboard.difficulty.difficulty],
           })
         }
+
         nextPage =
           metadata.page + 1 <= Math.ceil(metadata.total / metadata.itemsPerPage)
             ? metadata.page + 1

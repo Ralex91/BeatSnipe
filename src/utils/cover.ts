@@ -1,8 +1,8 @@
 import { createCanvas, loadImage } from "@napi-rs/canvas"
-import ky from "ky"
 import path from "path"
+import { fetch } from "./fetch"
 
-const bufferImage = async (url: string) => await ky.get(url).arrayBuffer()
+const bufferImage = async (url: string) => await fetch.get(url).arrayBuffer()
 
 export default async function cover(avatarURL: string, leaderboard: string) {
   const cv = createCanvas(100, 100)

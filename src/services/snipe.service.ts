@@ -1,3 +1,4 @@
+import { ScoreRepository } from "@/repositories/score.repository"
 import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
@@ -44,7 +45,7 @@ export class SnipeService {
       }
     }
 
-    await SnipeRepository.addScores(scoresToSnipe)
+    await ScoreRepository.addScores(scoresToSnipe)
   }
 
   static async add(

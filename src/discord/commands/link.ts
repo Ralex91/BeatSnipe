@@ -1,7 +1,7 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
+import { PlayerRepository } from "@/repositories/player.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
-import db from "@/utils/db"
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
@@ -29,11 +29,7 @@ export default {
       return
     }
 
-    const linked = await db.player.count({
-      where: {
-        discordId,
-      },
-    })
+    const linked = await PlayerRepository.getByDiscordId(discordId)
 
     if (linked) {
       await interaction.editReply(
@@ -55,12 +51,7 @@ export default {
       return
     }
 
-    await db.player.create({
-      data: {
-        id: playerId,
-        discordId,
-      },
-    })
+    await PlayerRepository.add(playerId, discordId)
 
     const linkedEmbed = new EmbedBuilder()
       .setColor("#4cd639")

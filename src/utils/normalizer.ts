@@ -1,3 +1,5 @@
+import { SocketResponseBL } from "@/types/beatleader"
+
 function scoreSaber({ leaderboard, score }: any) {
   const acc: number =
     leaderboard.maxScore > 0
@@ -16,7 +18,7 @@ function scoreSaber({ leaderboard, score }: any) {
   }
 }
 
-function beatLeader(response: any) {
+function beatLeader(response: SocketResponseBL) {
   const { leaderboard, player, accuracy, modifiedScore } = response
   const acc: number = accuracy * 100
 

@@ -1,16 +1,5 @@
 import db from "@/utils/db"
 
-type AddScores = {
-  name: string
-  playerId: string
-  snipeId: string
-  hash: string
-  leaderboard: string
-  score: number
-  difficulty: string
-  gamemode: string
-}
-
 export class SnipeRepository {
   static async getById(id: string) {
     return await db.snipe.findUnique({
@@ -83,13 +72,6 @@ export class SnipeRepository {
         playerId,
         leaderboard,
       },
-    })
-  }
-
-  static async addScores(scores: AddScores[]) {
-    return await db.score.createMany({
-      data: scores.reverse(),
-      skipDuplicates: true,
     })
   }
 
