@@ -1,7 +1,7 @@
 import { fetch } from "./fetch"
 //
 //  getMapMaxScore, calcAcc:
-//  https://github.com/Hei5enberg44/BSFR-Cube-Stalker/blob/master/controllers/top1.js
+//  https://github.com/Hei5enberg44/BSFR-Cube-Stalker/blob/master/src/controllers/top1.ts
 //
 
 async function getMapDetails(hash: string) {
