@@ -81,7 +81,7 @@ async function getPlayerScores(beatLeaderId: string) {
     for (const playerScore of playerScores) {
       scores.push({
         songName: playerScore.leaderboard.song.name,
-        songHash: playerScore.leaderboard.song.hash,
+        songHash: playerScore.leaderboard.song.hash.toUpperCase(),
         score: playerScore.modifiedScore,
         difficulty: playerScore.leaderboard.difficulty.difficultyName,
       })
