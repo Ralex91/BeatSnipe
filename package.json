@@ -1,6 +1,6 @@
 {
   "name": "beatsnipe",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "I'm a bot that tracks the scores of the players you want to snipe to generate & auto-update playlists ",
   "scripts": {
     "listener": "bun ./src/listener.ts",
