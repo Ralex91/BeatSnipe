@@ -23,7 +23,7 @@ function beatLeader(response: SocketResponseBL) {
   const acc: number = accuracy * 100
 
   return {
-    hash: leaderboard.song.hash,
+    hash: leaderboard.song.hash.toUpperCase(),
     name: leaderboard.song.name,
     difficulty: leaderboard.difficulty.difficultyName,
     gamemode: leaderboard.difficulty.modeName,
