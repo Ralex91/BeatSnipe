@@ -14,6 +14,8 @@ app
   .route("/playlist", playlistRoutes)
   .route("/discord", discordRoutes)
 
+app.notFound((c) => c.json({ code: 404, message: "Not found" }, 404))
+
 export default {
   port: process.env.WEB_PORT,
   fetch: app.fetch,
