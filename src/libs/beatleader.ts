@@ -1,18 +1,22 @@
-import fetch from "phin"
+import ky from "ky"
 
 async function getPlayerInfo(playerId: string) {
   try {
-    const playerData = await fetch({
-      url: `https://api.beatleader.xyz/player/${playerId}?stats=false&keepOriginalId=false`,
-      method: "GET",
-      parse: "string",
-    })
+    const playerData: any = await ky.get(
+      `https://api.beatleader.xyz/player/${playerId}`,
+      {
+        searchParams: {
+          stats: false,
+          keepOriginalId: false,
+        },
+      },
+    )
 
-    if (playerData.statusCode !== 200) {
+    if (playerData.status !== 200) {
       return false
     }
 
-    const data = JSON.parse(playerData.body)
+    const data = await playerData.json()
 
     return {
       name: data.name,
@@ -37,17 +41,15 @@ async function getPlayerScoreMap(
   difficulty: string,
   gamemode: string,
 ) {
-  const getScore = await fetch({
-    url: `https://api.beatleader.xyz/player/${playerId}/scorevalue/${hash}/${difficulty}/${gamemode}`,
-    method: "GET",
-    parse: "string",
-  })
+  const getScore: any = await ky.get(
+    `https://api.beatleader.xyz/player/${playerId}/scorevalue/${hash}/${difficulty}/${gamemode}`,
+  )
 
-  if (getScore.statusCode !== 200) {
+  if (getScore.status !== 200) {
     return false
   }
 
-  const data = JSON.parse(getScore.body)
+  const data = await getScore.json()
 
   return data.score
 }
@@ -58,15 +60,23 @@ async function getPlayerScores(beatLeaderId: string) {
   let nextPage = null
 
   do {
-    const data: any = await fetch({
-      url: `https://api.beatleader.xyz/player/${beatLeaderId}/scores?sortBy=date&order=desc&count=100&page=${
-        nextPage ?? 1
-      }`,
-      method: "GET",
-      parse: "json",
-    })
-    const playerScores = data.body.data
-    const { metadata } = data.body
+    const data: any = await ky.get(
+      `https://api.beatleader.xyz/player/${beatLeaderId}/scores`,
+      {
+        searchParams: {
+          sortBy: "date",
+          order: "desc",
+          count: 100,
+          page: nextPage ?? 1,
+        },
+      },
+    )
+
+    if (data.status !== 200) {
+      return false
+    }
+
+    const { metadata, data: playerScores } = await data.json()
 
     for (const playerScore of playerScores) {
       scores.push({

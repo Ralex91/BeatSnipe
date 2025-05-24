@@ -15,7 +15,6 @@ export default class Events {
       .filter((file) => file.endsWith(".js"))
 
     for (const file of eventFiles) {
-      // eslint-disable-next-line no-await-in-loop
       const { default: event } = await import(`../events/${file}`)
 
       if (event.disabled) {

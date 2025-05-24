@@ -1,16 +1,11 @@
 import { createCanvas, loadImage } from "@napi-rs/canvas"
+import ky from "ky"
 import path from "path"
-import fetch from "phin"
 
-const bufferImage = async (url: string) => {
-  const { body } = await fetch(url)
-  const imageBuffer = Buffer.from(body)
-
-  return imageBuffer
-}
+const bufferImage = async (url: string) => await ky.get(url).arrayBuffer()
 
 export default async function cover(avatarURL: string, leaderboard: string) {
-  const cv = createCanvas(200, 200)
+  const cv = createCanvas(100, 100)
   const ct = cv.getContext("2d")
   const avatarBuf = await bufferImage(avatarURL)
   const avatar = await loadImage(avatarBuf)
@@ -23,12 +18,20 @@ export default async function cover(avatarURL: string, leaderboard: string) {
 
   ct.drawImage(avatar, 0, 0, cv.width, cv.height)
   ct.drawImage(scope, 0, 0, cv.width, cv.height)
-  ct.drawImage(leaderboardIcon, cv.width / 2 - 25, cv.height / 2 - 25, 50, 50)
+  ct.drawImage(
+    leaderboardIcon,
+    cv.width / 2 - 12.5,
+    cv.height / 2 - 12.5,
+    25,
+    25,
+  )
 
   ct.shadowBlur = 0
   ct.strokeStyle = "#ff0000"
-  ct.lineWidth = 20
+  ct.lineWidth = 10
   ct.strokeRect(0, 0, cv.width, cv.height)
 
-  return <string>cv.toDataURL().split(";base64,").pop()
+  const pngData = await cv.encode("png")
+
+  return <string>pngData.toString("base64")
 }

@@ -7,6 +7,7 @@ import { PrismaClient } from "@prisma/client"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
 import sanitize from "sanitize-filename"
@@ -33,7 +34,7 @@ export default {
     ),
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     const playerId = interaction.options.getString("player")
     const discordId = interaction.user.id

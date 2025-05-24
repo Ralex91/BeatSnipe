@@ -4,7 +4,11 @@ import scoresaber from "@/libs/scoresaber"
 import { PlayerInfo } from "@/types/player"
 import packageJson from "@package"
 import { PrismaClient } from "@prisma/client"
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
+import {
+  ChatInputCommandInteraction,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js"
 
 const prisma = new PrismaClient()
 
@@ -31,7 +35,7 @@ export default {
 
   async execute(interaction: ChatInputCommandInteraction) {
     const discordId = interaction.user.id
-    await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     const getSniperId = await prisma.player.findFirst({
       where: {

@@ -1,16 +1,15 @@
-import fetch from "phin"
+import ky from "ky"
 //
 //  getMapMaxScore, calcAcc:
 //  https://github.com/Hei5enberg44/BSFR-Cube-Stalker/blob/master/controllers/top1.js
 //
 
 async function getMapDetails(hash: string) {
-  const mapDetails = await fetch({
-    url: `https://beatsaver.com/api/maps/hash/${hash}`,
-    parse: "json",
-  })
+  const mapDetails = await ky
+    .get(`https://beatsaver.com/api/maps/hash/${hash}`)
+    .json()
 
-  return mapDetails.body
+  return mapDetails
 }
 
 function getMapMaxScore(notes: number) {

@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+// eslint-disable-next-line no-undef
 module.exports = {
   apps: [
     {

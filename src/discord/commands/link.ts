@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client"
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
 
@@ -19,7 +20,7 @@ export default {
     ),
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     const playerId = interaction.options.getString("id")
     const discordId = interaction.user.id

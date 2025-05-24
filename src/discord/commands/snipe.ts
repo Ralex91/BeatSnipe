@@ -3,7 +3,11 @@ import smallEmbed from "@/discord/handlers/smallEmbed"
 import beatleader from "@/libs/beatleader"
 import scoresaber from "@/libs/scoresaber"
 import { PrismaClient } from "@prisma/client"
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
+import {
+  ChatInputCommandInteraction,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js"
 
 const prisma = new PrismaClient()
 const cooldownAdd = new Set()
@@ -65,7 +69,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const action = interaction.options.getSubcommand(true)
     const discordId = interaction.user.id
-    await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     const sniper = await prisma.player.findFirst({
       where: {

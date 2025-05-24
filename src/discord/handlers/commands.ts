@@ -12,7 +12,6 @@ import { resolve } from "node:path"
 
 interface Command extends ApplicationCommand {
   allowedChannels?: string[]
-  // eslint-disable-next-line @typescript-eslint/ban-types
   execute: Function
 }
 
@@ -71,7 +70,6 @@ export default class Commands {
       .filter((file) => file.endsWith(".ts"))
 
     for (const file of commandFiles) {
-      // eslint-disable-next-line no-await-in-loop
       const { default: command } = await import(`../commands/${file}`)
       commands.push(command.data)
       this.commands.set(command.data.name, command)

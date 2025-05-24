@@ -1,7 +1,9 @@
 export default function isJsonString(str: string) {
   try {
     JSON.parse(str)
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error(e)
+
     return false
   }
 

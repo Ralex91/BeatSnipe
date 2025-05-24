@@ -1,4 +1,4 @@
-import fetch from "phin"
+import ky from "ky"
 
 const SSDifficultyId: { [code: string]: number } = {
   Easy: 1,
@@ -12,25 +12,25 @@ const SSDifficultyString: { [code: number]: string } = Object.fromEntries(
 )
 
 async function getPlayerInfo(playerId: string) {
-  const playerData: any = await fetch({
-    url: `https://scoresaber.com/api/player/${playerId}/basic/`,
-    method: "GET",
-    parse: "json",
-  })
+  const playerData: any = await ky.get(
+    `https://scoresaber.com/api/player/${playerId}/basic/`,
+  )
 
-  if (playerData.statusCode !== 200) {
+  if (playerData.status !== 200) {
     return false
   }
 
+  const data = await playerData.json()
+
   return {
-    name: playerData.body.name,
-    id: playerData.body.id,
-    url: `https://scoresaber.com/u/${playerData.body.id}`,
-    avatar: playerData.body.profilePicture,
-    pp: playerData.body.pp,
-    rank: playerData.body.rank,
-    country: playerData.body.country,
-    countryRank: playerData.body.countryRank,
+    name: data.name,
+    id: data.id,
+    url: `https://scoresaber.com/u/${data.id}`,
+    avatar: data.profilePicture,
+    pp: data.pp,
+    rank: data.rank,
+    country: data.country,
+    countryRank: data.countryRank,
   }
 }
 
@@ -40,17 +40,24 @@ async function getPlayerScoreMap(
   difficulty: string,
   gamemode: string,
 ) {
-  const getScore: any = await fetch({
-    url: `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores?difficulty=${SSDifficultyId[difficulty]}&search=${playerName}&gameMode=Solo${gamemode}`,
-    method: "GET",
-    parse: "json",
-  })
+  const getScore: any = await ky.get(
+    `https://scoresaber.com/api/leaderboard/by-hash/${hash}/scores`,
+    {
+      searchParams: {
+        difficulty: SSDifficultyId[difficulty],
+        search: playerName,
+        gameMode: `Solo${gamemode}`,
+      },
+    },
+  )
 
-  if (getScore.statusCode !== 200) {
+  if (getScore.status !== 200) {
     return false
   }
 
-  return getScore.body.scores[0].modifiedScore
+  const data = await getScore.json()
+
+  return data.scores[0].modifiedScore
 }
 
 async function getPlayerScores(scoreSaberId: string) {
@@ -58,15 +65,22 @@ async function getPlayerScores(scoreSaberId: string) {
   let nextPage = null
 
   do {
-    const data: any = await fetch({
-      url: `https://scoresaber.com/api/player/${scoreSaberId}/scores?sort=recent&limit=100&page=${
-        nextPage ?? 1
-      }`,
-      method: "GET",
-      parse: "json",
-    })
-    const { playerScores } = data.body
-    const { metadata } = data.body
+    const rawPlayerScores: any = await ky.get(
+      `https://scoresaber.com/api/player/${scoreSaberId}/scores`,
+      {
+        searchParams: {
+          sort: "recent",
+          limit: 100,
+          page: nextPage ?? 1,
+        },
+      },
+    )
+
+    if (rawPlayerScores.status !== 200) {
+      return false
+    }
+
+    const { metadata, playerScores } = await rawPlayerScores.json()
 
     for (const playerScore of playerScores) {
       scores.push({
