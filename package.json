@@ -16,6 +16,7 @@
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
     "hono": "^4.7.10",
+    "ky": "^1.8.1",
     "pm2": "^6.0.6",
     "prettier": "^3.5.3",
     "sanitize-filename": "^1.6.3",
