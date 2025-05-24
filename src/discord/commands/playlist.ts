@@ -3,6 +3,7 @@ import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
+import { LEADERBOARD } from "@/utils/contantes"
 import playlist from "@/utils/playlist"
 import {
   AttachmentBuilder,
@@ -26,8 +27,8 @@ export default {
         .setName("leaderboard")
         .setDescription("Leaderboard scores")
         .addChoices(
-          { name: "scoresaber", value: "scoresaber" },
-          { name: "beatleader", value: "beatleader" },
+          { name: "scoresaber", value: LEADERBOARD.ScoreSaber },
+          { name: "beatleader", value: LEADERBOARD.BeatLeader },
         )
         .setRequired(true),
     ),
@@ -87,11 +88,11 @@ export default {
 
     let playerInfo: PlayerInfo | false = false
 
-    if (leaderboard === "scoresaber") {
+    if (leaderboard === LEADERBOARD.ScoreSaber) {
       playerInfo = await ScoreSaberService.getPlayerInfo(playerId)
     }
 
-    if (leaderboard === "beatleader") {
+    if (leaderboard === LEADERBOARD.BeatLeader) {
       playerInfo = await BeatLeaderService.getPlayerInfo(playerId)
     }
 

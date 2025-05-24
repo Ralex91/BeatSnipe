@@ -3,14 +3,15 @@ import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { Comparator } from "@/types/comparator"
 import { PlayerInfo } from "@/types/player"
+import { LEADERBOARD } from "@/utils/contantes"
 import db from "@/utils/db"
 
 const shortName = (leaderboard: string) => {
-  if (leaderboard === "scoresaber") {
+  if (leaderboard === LEADERBOARD.ScoreSaber) {
     return "SS"
   }
 
-  if (leaderboard === "beatleader") {
+  if (leaderboard === LEADERBOARD.BeatLeader) {
     return "BL"
   }
 
@@ -40,9 +41,9 @@ const checkNewSnipeScore = async (
 
   let sniperInfo: PlayerInfo | false = false
 
-  if (leaderboard === "scoresaber") {
+  if (leaderboard === LEADERBOARD.ScoreSaber) {
     sniperInfo = await ScoreSaberService.getPlayerInfo(sniper.sniperId)
-  } else if (leaderboard === "beatleader") {
+  } else if (leaderboard === LEADERBOARD.BeatLeader) {
     sniperInfo = await BeatLeaderService.getPlayerInfo(sniper.sniperId)
   }
 
@@ -53,14 +54,14 @@ const checkNewSnipeScore = async (
 
   let snipperScore: number = 0
 
-  if (leaderboard === "scoresaber") {
+  if (leaderboard === LEADERBOARD.ScoreSaber) {
     snipperScore = await ScoreSaberService.getPlayerScoreMap(
       sniperInfo.name,
       hash,
       difficulty,
       gamemode,
     )
-  } else if (leaderboard === "beatleader") {
+  } else if (leaderboard === LEADERBOARD.BeatLeader) {
     snipperScore = await BeatLeaderService.getPlayerScoreMap(
       sniper.sniperId,
       hash,

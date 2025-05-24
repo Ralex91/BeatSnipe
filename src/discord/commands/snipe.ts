@@ -3,6 +3,7 @@ import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { SnipeService } from "@/services/snipe.service"
+import { LEADERBOARD } from "@/utils/contantes"
 import db from "@/utils/db"
 import {
   ChatInputCommandInteraction,
@@ -33,8 +34,8 @@ export default {
             .setName("leaderboard")
             .setDescription("Leaderboard(s) where the snipe will be active")
             .addChoices(
-              { name: "scoresaber", value: "scoresaber" },
-              { name: "beatleader", value: "beatleader" },
+              { name: "scoresaber", value: LEADERBOARD.ScoreSaber },
+              { name: "beatleader", value: LEADERBOARD.BeatLeader },
               {
                 name: "scoresaber & beatleader",
                 value: "scoresaber,beatleader",
@@ -150,7 +151,7 @@ export default {
           return
         }
 
-        if (leaderboard.includes("scoresaber")) {
+        if (leaderboard.includes(LEADERBOARD.ScoreSaber)) {
           const isPlayerExistSS =
             await ScoreSaberService.getPlayerInfo(playerId)
           const isSniperExistSS = await ScoreSaberService.getPlayerInfo(
@@ -174,7 +175,7 @@ export default {
           }
         }
 
-        if (leaderboard.includes("beatleader")) {
+        if (leaderboard.includes(LEADERBOARD.BeatLeader)) {
           const isPlayerExistBL =
             await BeatLeaderService.getPlayerInfo(playerId)
           const isSniperExistBL = await BeatLeaderService.getPlayerInfo(

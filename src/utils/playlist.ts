@@ -4,6 +4,7 @@ import { PlayerInfo } from "@/types/player"
 import { Playlist } from "@/types/playlist"
 import cover from "@/utils/cover"
 import db from "@/utils/db"
+import { LEADERBOARD } from "./contantes"
 
 export default async function playlistMaker(
   leaderboard: string,
@@ -35,9 +36,9 @@ export default async function playlistMaker(
 
   let playerInfo: PlayerInfo | false = false
 
-  if (leaderboard === "scoresaber") {
+  if (leaderboard === LEADERBOARD.ScoreSaber) {
     playerInfo = await ScoreSaberService.getPlayerInfo(snipeInfo.playerId)
-  } else if (leaderboard === "beatleader") {
+  } else if (leaderboard === LEADERBOARD.BeatLeader) {
     playerInfo = await BeatLeaderService.getPlayerInfo(snipeInfo.playerId)
   }
 

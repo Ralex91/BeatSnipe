@@ -1,7 +1,9 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
 import { SnipeRepository } from "@/repositories/snipe.repository"
+import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
+import { LEADERBOARD } from "@/utils/contantes"
 import db from "@/utils/db"
 import packageJson from "@package"
 import {
@@ -78,10 +80,10 @@ export default {
     for (const player of getAllSnipe) {
       let playerInfo: PlayerInfo | false = false
 
-      if (player.leaderboard.includes("scoresaber")) {
+      if (player.leaderboard.includes(LEADERBOARD.ScoreSaber)) {
         playerInfo = await ScoreSaberService.getPlayerInfo(player.playerId)
-      } else if (player.leaderboard.includes("beatleader")) {
-        playerInfo = await ScoreSaberService.getPlayerInfo(player.playerId)
+      } else if (player.leaderboard.includes(LEADERBOARD.BeatLeader)) {
+        playerInfo = await BeatLeaderService.getPlayerInfo(player.playerId)
       }
 
       if (playerInfo) {
