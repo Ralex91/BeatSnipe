@@ -1,17 +1,15 @@
-import beatleader from "@/libs/beatleader"
-import scoresaber from "@/libs/scoresaber"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
 import { Playlist } from "@/types/playlist"
 import cover from "@/utils/cover"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import db from "@/utils/db"
 
 export default async function playlistMaker(
   leaderboard: string,
   snippeId: string,
 ) {
-  const snipeInfo = await prisma.snipe.findFirst({
+  const snipeInfo = await db.snipe.findFirst({
     where: {
       id: snippeId,
     },
@@ -38,9 +36,9 @@ export default async function playlistMaker(
   let playerInfo: PlayerInfo | false = false
 
   if (leaderboard === "scoresaber") {
-    playerInfo = await scoresaber.getPlayerInfo(snipeInfo.playerId)
+    playerInfo = await ScoreSaberService.getPlayerInfo(snipeInfo.playerId)
   } else if (leaderboard === "beatleader") {
-    playerInfo = await beatleader.getPlayerInfo(snipeInfo.playerId)
+    playerInfo = await BeatLeaderService.getPlayerInfo(snipeInfo.playerId)
   }
 
   if (!playerInfo) {

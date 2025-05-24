@@ -1,16 +1,14 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import beatleader from "@/libs/beatleader"
-import scoresaber from "@/libs/scoresaber"
+import { SnipeRepository } from "@/repositories/snipe.repository"
+import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
+import db from "@/utils/db"
 import packageJson from "@package"
-import { PrismaClient } from "@prisma/client"
 import {
   ChatInputCommandInteraction,
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
-
-const prisma = new PrismaClient()
 
 interface snipeList {
   color: number
@@ -37,7 +35,7 @@ export default {
     const discordId = interaction.user.id
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-    const getSniperId = await prisma.player.findFirst({
+    const getSniperId = await db.player.findFirst({
       where: {
         discordId,
       },
@@ -56,15 +54,7 @@ export default {
       return
     }
 
-    const getAllSnipe = await prisma.snipe.findMany({
-      where: {
-        sniperId: getSniperId.id,
-      },
-      select: {
-        playerId: true,
-        leaderboard: true,
-      },
-    })
+    const getAllSnipe = await SnipeRepository.getAll(getSniperId.id)
 
     if (!getAllSnipe) {
       await interaction.editReply(smallEmbed("❌ ┃ Your snipe list is empty"))
@@ -89,9 +79,9 @@ export default {
       let playerInfo: PlayerInfo | false = false
 
       if (player.leaderboard.includes("scoresaber")) {
-        playerInfo = await scoresaber.getPlayerInfo(player.playerId)
+        playerInfo = await ScoreSaberService.getPlayerInfo(player.playerId)
       } else if (player.leaderboard.includes("beatleader")) {
-        playerInfo = await beatleader.getPlayerInfo(player.playerId)
+        playerInfo = await ScoreSaberService.getPlayerInfo(player.playerId)
       }
 
       if (playerInfo) {

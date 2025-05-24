@@ -13,6 +13,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.70",
     "@prisma/client": "^6.8.2",
+    "bun-types": "^1.2.14",
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
     "hono": "^4.7.10",

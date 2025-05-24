@@ -1,9 +1,9 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import beatleader from "@/libs/beatleader"
-import scoresaber from "@/libs/scoresaber"
+import { SnipeRepository } from "@/repositories/snipe.repository"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
 import playlist from "@/utils/playlist"
-import { PrismaClient } from "@prisma/client"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
@@ -12,7 +12,6 @@ import {
 } from "discord.js"
 import sanitize from "sanitize-filename"
 
-const prisma = new PrismaClient()
 const cooldown = new Set()
 
 export default {
@@ -62,18 +61,10 @@ export default {
       return
     }
 
-    const snipe = await prisma.snipe.findFirst({
-      where: {
-        playerId,
-        sniper: {
-          discordId,
-        },
-      },
-      select: {
-        id: true,
-        leaderboard: true,
-      },
-    })
+    const snipe = await SnipeRepository.getByPlayerIdAndDiscordId(
+      playerId,
+      discordId,
+    )
 
     cooldown.add(discordId)
     setTimeout(() => {
@@ -97,11 +88,11 @@ export default {
     let playerInfo: PlayerInfo | false = false
 
     if (leaderboard === "scoresaber") {
-      playerInfo = await scoresaber.getPlayerInfo(playerId)
+      playerInfo = await ScoreSaberService.getPlayerInfo(playerId)
     }
 
     if (leaderboard === "beatleader") {
-      playerInfo = await beatleader.getPlayerInfo(playerId)
+      playerInfo = await BeatLeaderService.getPlayerInfo(playerId)
     }
 
     if (!playerInfo) {

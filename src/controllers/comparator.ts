@@ -1,8 +1,9 @@
-import Beatleader from "@/libs/beatleader"
-import Scoresaber from "@/libs/scoresaber"
+import { SnipeRepository } from "@/repositories/snipe.repository"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
 import { Comparator } from "@/types/comparator"
 import { PlayerInfo } from "@/types/player"
-import { PrismaClient } from "@prisma/client"
+import db from "@/utils/db"
 
 const shortName = (leaderboard: string) => {
   if (leaderboard === "scoresaber") {
@@ -15,7 +16,7 @@ const shortName = (leaderboard: string) => {
 
   return false
 }
-const prisma = new PrismaClient()
+
 const checkNewSnipeScore = async (
   scoreData: Comparator,
   leaderboard: string,
@@ -30,17 +31,7 @@ const checkNewSnipeScore = async (
 
   const { hash, name, difficulty, gamemode, baseScore, playerId, playerName } =
     scoreData
-  const sniper = await prisma.snipe.findFirst({
-    where: {
-      playerId,
-    },
-    select: {
-      id: true,
-      playerId: true,
-      sniperId: true,
-      leaderboard: true,
-    },
-  })
+  const sniper = await SnipeRepository.getSnipers(playerId)
 
   // There's no sniper on this player
   if (!sniper) {
@@ -50,9 +41,9 @@ const checkNewSnipeScore = async (
   let sniperInfo: PlayerInfo | false = false
 
   if (leaderboard === "scoresaber") {
-    sniperInfo = await Scoresaber.getPlayerInfo(sniper.sniperId)
+    sniperInfo = await ScoreSaberService.getPlayerInfo(sniper.sniperId)
   } else if (leaderboard === "beatleader") {
-    sniperInfo = await Beatleader.getPlayerInfo(sniper.sniperId)
+    sniperInfo = await BeatLeaderService.getPlayerInfo(sniper.sniperId)
   }
 
   // Sniper info not found
@@ -63,14 +54,14 @@ const checkNewSnipeScore = async (
   let snipperScore: number = 0
 
   if (leaderboard === "scoresaber") {
-    snipperScore = await Scoresaber.getPlayerScoreMap(
+    snipperScore = await ScoreSaberService.getPlayerScoreMap(
       sniperInfo.name,
       hash,
       difficulty,
       gamemode,
     )
   } else if (leaderboard === "beatleader") {
-    snipperScore = await Beatleader.getPlayerScoreMap(
+    snipperScore = await BeatLeaderService.getPlayerScoreMap(
       sniper.sniperId,
       hash,
       difficulty,
@@ -98,7 +89,7 @@ const checkNewSnipeScore = async (
     `[${prefix}] Snipe Alert : ${playerName} snipe ${sniperInfo.name} on ${name} | ${difficulty}`,
   )
 
-  const getScore = await prisma.score.findFirst({
+  const getScore = await db.score.findFirst({
     where: {
       playerId,
       snipeId: sniper.id,
@@ -114,7 +105,7 @@ const checkNewSnipeScore = async (
 
   // Deletion of previous score
   if (getScore) {
-    await prisma.score.delete({
+    await db.score.delete({
       where: {
         id: getScore.id,
       },
@@ -122,7 +113,7 @@ const checkNewSnipeScore = async (
   }
 
   // Save player score
-  await prisma.score.create({
+  await db.score.create({
     data: {
       name,
       playerId,
@@ -149,7 +140,7 @@ const checkSniperBeatScore = async (
 
   const { hash, name, difficulty, gamemode, baseScore, playerId, playerName } =
     scoreData
-  const snipePlayersScores = await prisma.score.findMany({
+  const snipePlayersScores = await db.score.findMany({
     where: {
       hash,
       difficulty,
@@ -179,7 +170,7 @@ const checkSniperBeatScore = async (
       console.log(`[${prefix}] ${playerScore.score} < ${baseScore}`)
 
       // Delete sniped score
-      await prisma.score.delete({
+      await db.score.delete({
         where: {
           id: playerScore.id,
         },

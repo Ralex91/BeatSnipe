@@ -1,15 +1,13 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import Beatleader from "@/libs/beatleader"
-import Scoresaber from "@/libs/scoresaber"
-import { PrismaClient } from "@prisma/client"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
+import db from "@/utils/db"
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
-
-const prisma = new PrismaClient()
 
 export default {
   data: new SlashCommandBuilder()
@@ -31,7 +29,7 @@ export default {
       return
     }
 
-    const linked = await prisma.player.count({
+    const linked = await db.player.count({
       where: {
         discordId,
       },
@@ -45,8 +43,8 @@ export default {
       return
     }
 
-    const playerDataSS = await Scoresaber.getPlayerInfo(playerId)
-    const playerDataBL = await Beatleader.getPlayerInfo(playerId)
+    const playerDataSS = await ScoreSaberService.getPlayerInfo(playerId)
+    const playerDataBL = await BeatLeaderService.getPlayerInfo(playerId)
     const playerData = playerDataSS || playerDataBL
 
     if (!playerData) {
@@ -57,7 +55,7 @@ export default {
       return
     }
 
-    await prisma.player.create({
+    await db.player.create({
       data: {
         id: playerId,
         discordId,

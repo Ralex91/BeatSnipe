@@ -1,12 +1,10 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import { PrismaClient } from "@prisma/client"
+import db from "@/utils/db"
 import {
   ChatInputCommandInteraction,
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
-
-const prisma = new PrismaClient()
 
 export default {
   data: new SlashCommandBuilder()
@@ -23,7 +21,7 @@ export default {
       ),
     )
 
-    const player = await prisma.player.findUnique({
+    const player = await db.player.findUnique({
       where: {
         discordId,
       },
@@ -39,7 +37,7 @@ export default {
       return
     }
 
-    await prisma.player.delete({
+    await db.player.delete({
       where: {
         discordId,
       },
