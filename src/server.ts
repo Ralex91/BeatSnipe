@@ -1,9 +1,9 @@
+import "@/discord/discord"
 import discordRoutes from "@/routes/discord"
 import playlistRoutes from "@/routes/playlist"
 import "dotenv/config"
 import { Hono } from "hono"
-
-import "@/discord/discord"
+import { StatusCodes } from "http-status-codes"
 
 const app = new Hono()
 
@@ -14,7 +14,7 @@ app
   .route("/playlist", playlistRoutes)
   .route("/discord", discordRoutes)
 
-app.notFound((c) => c.json({ code: 404, message: "Not found" }, 404))
+app.notFound((c) => c.json({ error: "Not found" }, StatusCodes.NOT_FOUND))
 
 export default {
   port: process.env.WEB_PORT,

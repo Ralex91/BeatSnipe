@@ -1,4 +1,5 @@
 import { Context, Hono } from "hono"
+import { StatusCodes } from "http-status-codes"
 
 const router = new Hono()
 
@@ -6,10 +7,9 @@ router.get("/", (c: Context) => {
   if (!process.env.DISCORD_INVITE) {
     return c.json(
       {
-        code: 403,
-        message: "DISCORD_INVITE undefined",
+        error: "DISCORD_INVITE is not set",
       },
-      403,
+      StatusCodes.NOT_IMPLEMENTED,
     )
   }
 

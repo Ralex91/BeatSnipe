@@ -4,25 +4,29 @@ import { PlaylistService } from "@/services/playlist.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { LEADERBOARD } from "@/utils/contantes"
 import { Context } from "hono"
+import { StatusCodes } from "http-status-codes"
 
 export class PlaylistController {
   static async getPlaylist(c: Context) {
     const { leaderboard, snipeId } = c.req.param()
 
     if (!Object.values(LEADERBOARD).includes(leaderboard)) {
-      return c.json({ code: 403, message: "Leaderboard not supported" }, 403)
+      return c.json(
+        { error: "Leaderboard not supported" },
+        StatusCodes.BAD_REQUEST,
+      )
     }
 
     const snipe = await SnipeRepository.getById(snipeId)
 
     if (!snipe) {
-      return c.json({ code: 404, message: "Playlist not found" }, 404)
+      return c.json({ error: "Playlist not found" }, StatusCodes.NOT_FOUND)
     }
 
     if (!snipe.leaderboard.split(",").includes(leaderboard)) {
       return c.json(
-        { code: 403, message: "This snipe not for this leaderboard" },
-        403,
+        { error: "This snipe not for this leaderboard" },
+        StatusCodes.BAD_REQUEST,
       )
     }
 
@@ -41,13 +45,13 @@ export class PlaylistController {
     }
 
     if (!player) {
-      return c.json({ code: 404, message: "Player not found" }, 404)
+      return c.json({ error: "Player not found" }, StatusCodes.NOT_FOUND)
     }
 
     const scores = await SnipeRepository.getScores(snipe.id, leaderboard)
 
     if (!scores) {
-      return c.json({ code: 404, message: "Scores not found" }, 404)
+      return c.json({ error: "Scores not found" }, StatusCodes.NOT_FOUND)
     }
 
     const playlistService = new PlaylistService(leaderboard)

@@ -52,7 +52,7 @@ export class PlaylistService {
     snipe: Snipe,
     scores: Score[],
     player: PlayerInfo,
-  ): Promise<Playlist | { code: number; message: string }> {
+  ): Promise<Playlist> {
     const imageBase64 = await this.getCoverImage(player.avatar)
 
     const playlist: Playlist = {
