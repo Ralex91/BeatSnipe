@@ -1,7 +1,6 @@
 import "@/discord/discord"
 import discordRoutes from "@/routes/discord"
 import playlistRoutes from "@/routes/playlist"
-import "dotenv/config"
 import { Hono } from "hono"
 import { StatusCodes } from "http-status-codes"
 

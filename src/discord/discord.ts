@@ -1,7 +1,6 @@
 import Commands from "@/discord/handlers/commands"
 import packageJson from "@package"
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
-import "dotenv/config"
 //import events from "@/discord/handlers/events"
 
 const client = new Client({
