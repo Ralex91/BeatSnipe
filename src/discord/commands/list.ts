@@ -4,7 +4,7 @@ import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
-import { LEADERBOARD } from "@/utils/contantes"
+import { EMBED_COLORS, LEADERBOARD } from "@/utils/contants"
 import packageJson from "@package"
 import {
   ChatInputCommandInteraction,
@@ -58,7 +58,7 @@ export default {
     }
 
     const snipeListEmbed: snipeList = {
-      color: 0xff0000,
+      color: EMBED_COLORS.primary,
       title: "📋 ┃ List of players you are sniping",
       thumbnail: {
         url: "https://cdn-icons-png.flaticon.com/512/5641/5641195.png",

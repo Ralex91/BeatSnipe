@@ -4,7 +4,7 @@ import { BeatLeaderService } from "@/services/beatleader.service"
 import { PlaylistService } from "@/services/playlist.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
-import { LEADERBOARD } from "@/utils/contantes"
+import { EMBED_COLORS, LEADERBOARD } from "@/utils/contants"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
@@ -132,7 +132,12 @@ export default {
     )
 
     await interaction.editReply({
-      embeds: [{ color: 0xff0000, title: `✅ ┃ Snipe's playlist is ready` }],
+      embeds: [
+        {
+          color: EMBED_COLORS.primary,
+          title: `✅ ┃ Snipe's playlist is ready`,
+        },
+      ],
       files: [attachment],
     })
   },

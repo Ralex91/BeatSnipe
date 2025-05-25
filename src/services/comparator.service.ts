@@ -4,7 +4,7 @@ import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { Comparator } from "@/types/comparator"
 import { PlayerInfo } from "@/types/player"
-import { LEADERBOARD } from "@/utils/contantes"
+import { LEADERBOARD } from "@/utils/contants"
 
 export class ComparatorService {
   private leaderboard: string

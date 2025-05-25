@@ -2,7 +2,7 @@ import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { PlaylistService } from "@/services/playlist.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
-import { LEADERBOARD } from "@/utils/contantes"
+import { LEADERBOARD } from "@/utils/contants"
 import { Context } from "hono"
 import { StatusCodes } from "http-status-codes"
 

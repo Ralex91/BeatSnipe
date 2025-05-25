@@ -2,6 +2,7 @@ import smallEmbed from "@/discord/handlers/smallEmbed"
 import { PlayerRepository } from "@/repositories/player.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
+import { EMBED_COLORS } from "@/utils/contants"
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
@@ -54,7 +55,7 @@ export default {
     await PlayerRepository.add(playerId, discordId)
 
     const linkedEmbed = new EmbedBuilder()
-      .setColor("#4cd639")
+      .setColor(EMBED_COLORS.success)
       .setTitle(playerData.name)
       .setURL(playerData.url)
       .setThumbnail(playerData.avatar)

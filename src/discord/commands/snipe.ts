@@ -5,7 +5,7 @@ import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { SnipeService } from "@/services/snipe.service"
-import { LEADERBOARD } from "@/utils/contantes"
+import { LEADERBOARD } from "@/utils/contants"
 import {
   ChatInputCommandInteraction,
   MessageFlags,

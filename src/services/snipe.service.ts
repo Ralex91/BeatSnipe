@@ -3,7 +3,7 @@ import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerScore } from "@/types/player"
-import { LEADERBOARD } from "@/utils/contantes"
+import { LEADERBOARD } from "@/utils/contants"
 
 type AddScoresParams = {
   snipeId: string

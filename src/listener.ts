@@ -2,7 +2,7 @@ import { ComparatorService } from "@/services/comparator.service"
 import Normalizer from "@/utils/normalizer.js"
 import { BeatLeaderSocket } from "./sockets/beatleader.socket"
 import { ScoreSaberSocket } from "./sockets/scoresaber.socket"
-import { LEADERBOARD } from "./utils/contantes"
+import { LEADERBOARD } from "./utils/contants"
 
 const scoreSaberSocket = new ScoreSaberSocket()
 
