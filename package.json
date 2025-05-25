@@ -1,6 +1,6 @@
 {
   "name": "beatsnipe",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "I'm a bot that tracks the scores of the players you want to snipe to generate & auto-update playlists ",
   "scripts": {
     "listener": "bun ./src/listener.ts",
@@ -9,7 +9,7 @@
     "down": "pm2 delete ecosystem.config.js"
   },
   "author": "Ralex",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@napi-rs/canvas": "^0.1.70",
     "@prisma/client": "^6.8.2",
