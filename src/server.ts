@@ -1,6 +1,6 @@
 import "@/discord/discord"
-import discordRoutes from "@/routes/discord"
-import playlistRoutes from "@/routes/playlist"
+import discordRoutes from "@/routes/discord.route"
+import playlistRoutes from "@/routes/playlist.route"
 import { Hono } from "hono"
 import { StatusCodes } from "http-status-codes"
 
