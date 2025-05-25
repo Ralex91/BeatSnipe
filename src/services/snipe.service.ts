@@ -65,7 +65,7 @@ export class SnipeService {
     if (!snipe) {
       console.log("Could not create/refresh snipe")
 
-      return false
+      return null
     }
 
     if (leaderboard.includes(LEADERBOARD.ScoreSaber)) {

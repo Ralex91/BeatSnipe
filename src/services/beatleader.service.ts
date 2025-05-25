@@ -20,7 +20,7 @@ export class BeatLeaderService {
       )
 
       if (reponse.status !== 200) {
-        return false
+        return null
       }
 
       const data = await reponse.json()
@@ -38,7 +38,7 @@ export class BeatLeaderService {
     } catch (error) {
       console.error(`Failed to get player info ${playerId}`, error)
 
-      return false
+      return null
     }
   }
 
@@ -65,7 +65,7 @@ export class BeatLeaderService {
         }
 
         if (reponse.status !== 200) {
-          return false
+          return null
         }
 
         const data = await reponse.json()
@@ -82,7 +82,7 @@ export class BeatLeaderService {
 
         console.error("Error while fetching score:", error)
 
-        return false
+        return null
       }
     }
   }
@@ -115,7 +115,7 @@ export class BeatLeaderService {
         }
 
         if (response.status !== 200) {
-          return false
+          return null
         }
 
         retryDelay = 1000
@@ -147,7 +147,7 @@ export class BeatLeaderService {
 
         console.error("Error while fetching scores:", error)
 
-        return false
+        return null
       }
     } while (nextPage)
 

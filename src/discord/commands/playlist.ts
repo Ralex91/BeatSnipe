@@ -1,10 +1,10 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
 import { SnipeRepository } from "@/repositories/snipe.repository"
 import { BeatLeaderService } from "@/services/beatleader.service"
+import { PlaylistService } from "@/services/playlist.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
 import { LEADERBOARD } from "@/utils/contantes"
-import playlist from "@/utils/playlist"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
@@ -86,7 +86,7 @@ export default {
       return
     }
 
-    let playerInfo: PlayerInfo | false = false
+    let playerInfo: PlayerInfo | null = null
 
     if (leaderboard === LEADERBOARD.ScoreSaber) {
       playerInfo = await ScoreSaberService.getPlayerInfo(playerId)
@@ -110,7 +110,20 @@ export default {
       ),
     )
 
-    const playlistContent = await playlist(leaderboard, snipe.id)
+    const scores = await SnipeRepository.getScores(snipe.id, leaderboard)
+
+    if (!scores) {
+      await interaction.editReply(smallEmbed("❌ ┃ Snipe not found"))
+
+      return
+    }
+
+    const plalistService = new PlaylistService(leaderboard)
+    const playlistContent = await plalistService.create(
+      snipe,
+      scores,
+      playerInfo,
+    )
     const attachment = new AttachmentBuilder(
       Buffer.from(JSON.stringify(playlistContent)),
       {

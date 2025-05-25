@@ -71,7 +71,7 @@ export default {
     }
 
     for (const player of getAllSnipe) {
-      let playerInfo: PlayerInfo | false = false
+      let playerInfo: PlayerInfo | null = null
 
       if (player.leaderboard.includes(LEADERBOARD.ScoreSaber)) {
         playerInfo = await ScoreSaberService.getPlayerInfo(player.playerId)

@@ -37,6 +37,23 @@ export class SnipeRepository {
     })
   }
 
+  static async getScores(id: string, leaderboard: string) {
+    const result = await db.snipe.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        scores: {
+          where: {
+            leaderboard,
+          },
+        },
+      },
+    })
+
+    return result?.scores
+  }
+
   static async getAll(sniperId: string) {
     return await db.snipe.findMany({
       where: {

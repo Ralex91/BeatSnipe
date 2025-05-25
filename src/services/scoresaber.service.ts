@@ -26,7 +26,7 @@ export class ScoreSaberService {
     )
 
     if (response.status !== 200) {
-      return false
+      return null
     }
 
     const data = await response.json()
@@ -61,7 +61,7 @@ export class ScoreSaberService {
     )
 
     if (response.status !== 200) {
-      return false
+      return null
     }
 
     const data = await response.json()
@@ -96,7 +96,7 @@ export class ScoreSaberService {
         }
 
         if (response.status !== 200) {
-          return false
+          return null
         }
 
         retryDelay = 1000
@@ -128,7 +128,7 @@ export class ScoreSaberService {
 
         console.error("Error while fetching scores:", error)
 
-        return false
+        return null
       }
     } while (nextPage)
 

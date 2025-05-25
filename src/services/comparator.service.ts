@@ -8,10 +8,10 @@ import { LEADERBOARD } from "@/utils/contantes"
 
 export class ComparatorService {
   private leaderboard: string
-  private prefix: string | false
+  private prefix: string | null
   private scoreService: typeof ScoreSaberService | typeof BeatLeaderService
 
-  private static getShortName(leaderboard: string): string | false {
+  private static getShortName(leaderboard: string): string | null {
     if (leaderboard === LEADERBOARD.ScoreSaber) {
       return "SS"
     }
@@ -20,7 +20,7 @@ export class ComparatorService {
       return "BL"
     }
 
-    return false
+    return null
   }
 
   constructor(leaderboard: string) {
@@ -59,14 +59,15 @@ export class ComparatorService {
       return
     }
 
-    const sniperInfo: PlayerInfo | false =
-      await this.scoreService.getPlayerInfo(sniper.sniperId)
+    const sniperInfo: PlayerInfo | null = await this.scoreService.getPlayerInfo(
+      sniper.sniperId,
+    )
 
     if (!sniperInfo) {
       return
     }
 
-    let sniperScore: number | false = false
+    let sniperScore: number | null = null
 
     if (this.leaderboard === LEADERBOARD.ScoreSaber) {
       sniperScore = await ScoreSaberService.getPlayerScoreMap(

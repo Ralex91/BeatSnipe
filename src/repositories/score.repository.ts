@@ -1,7 +1,7 @@
 import {
-  AddScores,
   GetPlayerScoresLeaderboard,
   GetScoreParams,
+  Scores,
 } from "@/types/score"
 import db from "@/utils/db"
 
@@ -54,13 +54,13 @@ export class ScoreRepository {
     })
   }
 
-  static async add(score: AddScores) {
+  static async add(score: Scores) {
     return await db.score.create({
       data: score,
     })
   }
 
-  static async addScores(scores: AddScores[]) {
+  static async addScores(scores: Scores[]) {
     return await db.score.createMany({
       data: scores.reverse(),
       skipDuplicates: true,

@@ -1,4 +1,4 @@
-export type AddScores = {
+export type Scores = {
   name: string
   playerId: string
   snipeId: string
