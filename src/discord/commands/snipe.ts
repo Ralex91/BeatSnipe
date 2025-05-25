@@ -237,7 +237,7 @@ export default {
           ),
         )
 
-        await ScoreRepository.deleteBySnipeId(snipe.id)
+        await ScoreRepository.deleteScores(snipe.id)
 
         await SnipeService.add(
           snipe.sniperId,

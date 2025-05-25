@@ -6,7 +6,8 @@
     "listener": "bun ./src/listener.ts",
     "server": "bun ./src/server.ts",
     "deploy": "pm2 startOrRestart ecosystem.config.js",
-    "down": "pm2 delete ecosystem.config.js"
+    "down": "pm2 delete ecosystem.config.js",
+    "refresh": "bun ./scripts/refreshAll.mjs"
   },
   "author": "Ralex",
   "license": "MIT",
@@ -14,6 +15,7 @@
     "@napi-rs/canvas": "^0.1.70",
     "@prisma/client": "^6.8.2",
     "bun-types": "^1.2.14",
+    "chalk": "^5.4.1",
     "discord.js": "^14.19.3",
     "hono": "^4.7.10",
     "hono-rate-limiter": "^0.4.2",

@@ -75,7 +75,7 @@ export class ScoreRepository {
     })
   }
 
-  static async deleteBySnipeId(snipeId: string) {
+  static async deleteScores(snipeId: string) {
     return await db.score.deleteMany({
       where: {
         snipeId,
