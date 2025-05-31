@@ -14,7 +14,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.70",
     "@prisma/client": "^6.8.2",
-    "bun-types": "^1.2.14",
+    "bun-types": "^1.2.15",
     "chalk": "^5.4.1",
     "discord.js": "^14.19.3",
     "hono": "^4.7.10",
@@ -26,11 +26,11 @@
     "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {
-    "@types/node": "^22.15.21",
+    "@types/node": "^22.15.29",
     "@types/ws": "^8.18.1",
-    "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.32.1",
-    "eslint": "^9.27.0",
+    "@typescript-eslint/eslint-plugin": "^8.33.0",
+    "@typescript-eslint/parser": "^8.33.0",
+    "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "nodemon": "^3.1.10",
     "prisma": "^6.8.2",
