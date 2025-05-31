@@ -1,6 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import isJsonString from "@/libs/isJsonString"
+import { LEADERBOARD } from "@/utils/contants"
+import { Logger } from "@/utils/logger"
+import chalk from "chalk"
 
 export class ScoreSaberSocket {
   private socket: WebSocket | null = null
@@ -9,7 +12,7 @@ export class ScoreSaberSocket {
 
   start() {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      console.log("[SS] WebSocket already connected")
+      Logger.error(LEADERBOARD.ScoreSaber, "WebSocket already connected")
 
       return
     }
@@ -17,7 +20,10 @@ export class ScoreSaberSocket {
     this.socket = new WebSocket("wss://scoresaber.com/ws")
 
     this.socket.addEventListener("open", () => {
-      console.log("[SS] WebSocket connected")
+      Logger.log(
+        LEADERBOARD.ScoreSaber,
+        `WebSocket ${chalk.green("connected")}`,
+      )
 
       if (this.reconnectTimeout) {
         clearTimeout(this.reconnectTimeout)
@@ -37,18 +43,19 @@ export class ScoreSaberSocket {
         try {
           handler(parsed.commandData)
         } catch (err) {
-          console.error("Error in handler:", err)
+          Logger.error(LEADERBOARD.ScoreSaber, err as string)
         }
       })
     })
 
     this.socket.addEventListener("error", (e) => {
-      console.error("[SS] WebSocket error:", e)
+      Logger.error(LEADERBOARD.ScoreSaber, `WebSocket error: ${e}`)
       this.socket?.close()
     })
 
     this.socket.addEventListener("close", () => {
-      console.log("[SS] WebSocket closed")
+      Logger.warn(LEADERBOARD.ScoreSaber, "WebSocket closed")
+
       this.socket = null
       this.reconnectTimeout = setTimeout(() => this.start(), 1000)
     })
@@ -62,7 +69,7 @@ export class ScoreSaberSocket {
 
     this.socket?.close()
     this.socket = null
-    console.log("[SS] WebSocket stopped")
+    Logger.warn(LEADERBOARD.ScoreSaber, "WebSocket stopped")
   }
 
   addMessageHandler(handler: (data: any) => void) {

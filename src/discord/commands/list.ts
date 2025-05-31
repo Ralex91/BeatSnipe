@@ -5,6 +5,7 @@ import { BeatLeaderService } from "@/services/beatleader.service"
 import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
 import { EMBED_COLORS, LEADERBOARD } from "@/utils/contants"
+import { Logger } from "@/utils/logger"
 import packageJson from "@package"
 import {
   ChatInputCommandInteraction,
@@ -87,7 +88,7 @@ export default {
 
         snipeListEmbed.fields.push(field)
       } else {
-        console.log(`Player not found on API: ${player.playerId}`)
+        Logger.error("discord", `Player not found on API: ${player.playerId}`)
       }
     }
 

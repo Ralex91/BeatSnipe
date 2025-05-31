@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import isJsonString from "@/libs/isJsonString"
+import { LEADERBOARD } from "@/utils/contants"
+import { Logger } from "@/utils/logger"
+import chalk from "chalk"
 
 export class BeatLeaderSocket {
   private socket: WebSocket | null = null
@@ -9,7 +12,7 @@ export class BeatLeaderSocket {
 
   start() {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      console.log("[BL] WebSocket already connected")
+      Logger.error(LEADERBOARD.BeatLeader, "WebSocket already connected")
 
       return
     }
@@ -17,7 +20,10 @@ export class BeatLeaderSocket {
     this.socket = new WebSocket("wss://sockets.api.beatleader.com/scores")
 
     this.socket.addEventListener("open", () => {
-      console.log("[BL] WebSocket connected")
+      Logger.log(
+        LEADERBOARD.BeatLeader,
+        `WebSocket ${chalk.green("connected")}`,
+      )
 
       if (this.reconnectTimeout) {
         clearTimeout(this.reconnectTimeout)
@@ -38,21 +44,22 @@ export class BeatLeaderSocket {
           try {
             handler(parsed)
           } catch (err) {
-            console.error("Error in BeatLeader handler:", err)
+            Logger.error(LEADERBOARD.BeatLeader, err as string)
           }
         })
       } catch (error) {
-        console.error("Invalid JSON from BeatLeader WebSocket:", error)
+        Logger.error(LEADERBOARD.BeatLeader, error as string)
       }
     })
 
     this.socket.addEventListener("error", (e) => {
-      console.error("[BL] WebSocket error:", e)
+      Logger.error(LEADERBOARD.BeatLeader, `WebSocket error: ${e}`)
+
       this.socket?.close()
     })
 
     this.socket.addEventListener("close", () => {
-      console.log("[BL] WebSocket closed")
+      Logger.warn(LEADERBOARD.BeatLeader, "WebSocket closed")
       this.socket = null
       this.reconnectTimeout = setTimeout(() => this.start(), 1000)
     })
@@ -66,7 +73,7 @@ export class BeatLeaderSocket {
 
     this.socket?.close()
     this.socket = null
-    console.log("[BL] WebSocket stopped")
+    Logger.warn(LEADERBOARD.BeatLeader, "WebSocket stopped")
   }
 
   addMessageHandler(handler: (data: any) => void) {

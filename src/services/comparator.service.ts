@@ -5,6 +5,9 @@ import { ScoreSaberService } from "@/services/scoresaber.service"
 import { Comparator } from "@/types/comparator"
 import { PlayerInfo } from "@/types/player"
 import { LEADERBOARD } from "@/utils/contants"
+import { Logger } from "@/utils/logger"
+import { difficultyColor } from "@/utils/score"
+import chalk from "chalk"
 
 export class ComparatorService {
   private leaderboard: string
@@ -89,17 +92,25 @@ export class ComparatorService {
       return
     }
 
-    console.log(
-      `[${this.prefix}] ${playerName} attempted snipe a score on ${name} | ${difficulty}`,
-    )
-    console.log(`[${this.prefix}] ${sniperScore} vs ${baseScore}`)
+    const isBeat: boolean = sniperScore < baseScore
 
-    if (sniperScore > baseScore) {
+    Logger.log(
+      this.leaderboard,
+      `${playerName} attempted snipe a score on ${chalk.bold(name)} | ${difficultyColor(
+        difficulty,
+      )}`,
+    )
+    Logger.comparison(this.leaderboard, sniperScore, baseScore, isBeat)
+
+    if (isBeat) {
       return
     }
 
-    console.log(
-      `[${this.prefix}] Snipe Alert: ${playerName} snipe ${sniperInfo.name} on ${name} | ${difficulty}`,
+    Logger.log(
+      this.leaderboard,
+      `${chalk.red.bold("SNIPED")}: ${playerName} snipe ${sniperInfo.name} on ${chalk.bold(name)} | ${difficultyColor(
+        difficulty,
+      )}`,
     )
 
     const existing = await ScoreRepository.get({
@@ -150,19 +161,24 @@ export class ComparatorService {
       return
     }
 
+    const idsToDelete = []
+
     for (const snipe of snipes) {
-      if (snipe.score < baseScore) {
-        console.log(
-          `[${this.prefix}] ${playerName} beat a score of ${snipe.snipe.playerId} on ${name} | ${difficulty}`,
-        )
-        console.log(`[${this.prefix}] ${snipe.score} < ${baseScore}`)
-        await ScoreRepository.delete(snipe.id)
-      } else {
-        console.log(
-          `[${this.prefix}] ${playerName} doesn't beat ${snipe.snipe.playerId} on ${name} | ${difficulty}`,
-        )
-        console.log(`[${this.prefix}] ${snipe.score} > ${baseScore}`)
+      const isBeat: boolean = snipe.score < baseScore
+
+      Logger.log(
+        this.leaderboard,
+        `${playerName} ${isBeat ? "beat" : "doesn't beat"} ${snipe.snipe.playerId} on ${chalk.bold(name)} | ${difficultyColor(difficulty)}`,
+      )
+      Logger.comparison(this.leaderboard, snipe.score, baseScore, isBeat)
+
+      if (isBeat) {
+        idsToDelete.push(snipe.id)
       }
+    }
+
+    if (idsToDelete.length > 0) {
+      await ScoreRepository.deleteMany(idsToDelete)
     }
   }
 }

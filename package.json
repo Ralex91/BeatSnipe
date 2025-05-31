@@ -16,6 +16,7 @@
     "@prisma/client": "^6.8.2",
     "bun-types": "^1.2.15",
     "chalk": "^5.4.1",
+    "dayjs": "^1.11.13",
     "discord.js": "^14.19.3",
     "hono": "^4.7.10",
     "hono-rate-limiter": "^0.4.2",

@@ -75,6 +75,16 @@ export class ScoreRepository {
     })
   }
 
+  static async deleteMany(ids: number[]) {
+    return await db.score.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    })
+  }
+
   static async deleteScores(snipeId: string) {
     return await db.score.deleteMany({
       where: {
