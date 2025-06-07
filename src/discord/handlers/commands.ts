@@ -1,4 +1,5 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
+import { Logger } from "@/utils/logger"
 import {
   ApplicationCommand,
   ApplicationCommandOptionType,
@@ -99,7 +100,8 @@ export default class Commands {
           const commandOptions = this.getCommandOptions(
             interaction.options.data,
           )
-          console.log(
+          Logger.log(
+            "discord",
             `${interaction.user.tag} executed the command "/${interaction.commandName}${commandOptions.length > 0 ? ` ${commandOptions.join(" ")}` : ""}"`,
           )
 
@@ -124,7 +126,8 @@ export default class Commands {
               "❌ ┃ An error occured when attempting to execute that command!",
             ),
           )
-          console.error(error)
+
+          Logger.error("discord", error as string)
         }
       },
     )

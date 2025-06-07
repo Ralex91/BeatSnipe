@@ -1,11 +1,12 @@
-import ky from "ky"
+import chalk from "chalk"
+import { fetch } from "./fetch"
 //
 //  getMapMaxScore, calcAcc:
-//  https://github.com/Hei5enberg44/BSFR-Cube-Stalker/blob/master/controllers/top1.js
+//  https://github.com/Hei5enberg44/BSFR-Cube-Stalker/blob/master/src/controllers/top1.ts
 //
 
 async function getMapDetails(hash: string) {
-  const mapDetails = await ky
+  const mapDetails = await fetch
     .get(`https://beatsaver.com/api/maps/hash/${hash}`)
     .json()
 
@@ -45,6 +46,42 @@ async function calcAcc(
   const maxScore = getMapMaxScore(notes)
 
   return (score / maxScore) * 100
+}
+
+export const difficultyColor = (difficulty: string) => {
+  let color = null
+
+  switch (difficulty.toLowerCase()) {
+    case "easy":
+      color = chalk.bgGreen
+
+      break
+
+    case "normal":
+      color = chalk.bgBlue
+
+      break
+
+    case "hard":
+      color = chalk.bgHex("#FF6347")
+
+      break
+
+    case "expert":
+      color = chalk.bgRed
+
+      break
+
+    case "expertplus":
+      color = chalk.bgHex("#8F48DB")
+
+      break
+
+    default:
+      color = chalk.bgWhite
+  }
+
+  return color(` ${difficulty} `)
 }
 
 export default {

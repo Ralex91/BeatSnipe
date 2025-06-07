@@ -1,16 +1,17 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import beatleader from "@/libs/beatleader"
-import scoresaber from "@/libs/scoresaber"
+import { PlayerRepository } from "@/repositories/player.repository"
+import { SnipeRepository } from "@/repositories/snipe.repository"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
+import { EMBED_COLORS, LEADERBOARD } from "@/utils/contants"
+import { Logger } from "@/utils/logger"
 import packageJson from "@package"
-import { PrismaClient } from "@prisma/client"
 import {
   ChatInputCommandInteraction,
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
-
-const prisma = new PrismaClient()
 
 interface snipeList {
   color: number
@@ -37,14 +38,7 @@ export default {
     const discordId = interaction.user.id
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-    const getSniperId = await prisma.player.findFirst({
-      where: {
-        discordId,
-      },
-      select: {
-        id: true,
-      },
-    })
+    const getSniperId = await PlayerRepository.getByDiscordId(discordId)
 
     if (!getSniperId) {
       await interaction.editReply(
@@ -56,15 +50,7 @@ export default {
       return
     }
 
-    const getAllSnipe = await prisma.snipe.findMany({
-      where: {
-        sniperId: getSniperId.id,
-      },
-      select: {
-        playerId: true,
-        leaderboard: true,
-      },
-    })
+    const getAllSnipe = await SnipeRepository.getAll(getSniperId.id)
 
     if (!getAllSnipe) {
       await interaction.editReply(smallEmbed("❌ ┃ Your snipe list is empty"))
@@ -73,7 +59,7 @@ export default {
     }
 
     const snipeListEmbed: snipeList = {
-      color: 0xff0000,
+      color: EMBED_COLORS.primary,
       title: "📋 ┃ List of players you are sniping",
       thumbnail: {
         url: "https://cdn-icons-png.flaticon.com/512/5641/5641195.png",
@@ -86,12 +72,12 @@ export default {
     }
 
     for (const player of getAllSnipe) {
-      let playerInfo: PlayerInfo | false = false
+      let playerInfo: PlayerInfo | null = null
 
-      if (player.leaderboard.includes("scoresaber")) {
-        playerInfo = await scoresaber.getPlayerInfo(player.playerId)
-      } else if (player.leaderboard.includes("beatleader")) {
-        playerInfo = await beatleader.getPlayerInfo(player.playerId)
+      if (player.leaderboard.includes(LEADERBOARD.ScoreSaber)) {
+        playerInfo = await ScoreSaberService.getPlayerInfo(player.playerId)
+      } else if (player.leaderboard.includes(LEADERBOARD.BeatLeader)) {
+        playerInfo = await BeatLeaderService.getPlayerInfo(player.playerId)
       }
 
       if (playerInfo) {
@@ -102,7 +88,7 @@ export default {
 
         snipeListEmbed.fields.push(field)
       } else {
-        console.log(`Player not found on API: ${player.playerId}`)
+        Logger.error("discord", `Player not found on API: ${player.playerId}`)
       }
     }
 

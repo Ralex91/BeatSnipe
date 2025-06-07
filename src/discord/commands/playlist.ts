@@ -1,9 +1,10 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import beatleader from "@/libs/beatleader"
-import scoresaber from "@/libs/scoresaber"
+import { SnipeRepository } from "@/repositories/snipe.repository"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { PlaylistService } from "@/services/playlist.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
 import { PlayerInfo } from "@/types/player"
-import playlist from "@/utils/playlist"
-import { PrismaClient } from "@prisma/client"
+import { EMBED_COLORS, LEADERBOARD } from "@/utils/contants"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
@@ -12,7 +13,6 @@ import {
 } from "discord.js"
 import sanitize from "sanitize-filename"
 
-const prisma = new PrismaClient()
 const cooldown = new Set()
 
 export default {
@@ -27,8 +27,8 @@ export default {
         .setName("leaderboard")
         .setDescription("Leaderboard scores")
         .addChoices(
-          { name: "scoresaber", value: "scoresaber" },
-          { name: "beatleader", value: "beatleader" },
+          { name: "scoresaber", value: LEADERBOARD.ScoreSaber },
+          { name: "beatleader", value: LEADERBOARD.BeatLeader },
         )
         .setRequired(true),
     ),
@@ -62,18 +62,10 @@ export default {
       return
     }
 
-    const snipe = await prisma.snipe.findFirst({
-      where: {
-        playerId,
-        sniper: {
-          discordId,
-        },
-      },
-      select: {
-        id: true,
-        leaderboard: true,
-      },
-    })
+    const snipe = await SnipeRepository.getByPlayerIdAndDiscordId(
+      playerId,
+      discordId,
+    )
 
     cooldown.add(discordId)
     setTimeout(() => {
@@ -94,14 +86,14 @@ export default {
       return
     }
 
-    let playerInfo: PlayerInfo | false = false
+    let playerInfo: PlayerInfo | null = null
 
-    if (leaderboard === "scoresaber") {
-      playerInfo = await scoresaber.getPlayerInfo(playerId)
+    if (leaderboard === LEADERBOARD.ScoreSaber) {
+      playerInfo = await ScoreSaberService.getPlayerInfo(playerId)
     }
 
-    if (leaderboard === "beatleader") {
-      playerInfo = await beatleader.getPlayerInfo(playerId)
+    if (leaderboard === LEADERBOARD.BeatLeader) {
+      playerInfo = await BeatLeaderService.getPlayerInfo(playerId)
     }
 
     if (!playerInfo) {
@@ -118,7 +110,20 @@ export default {
       ),
     )
 
-    const playlistContent = await playlist(leaderboard, snipe.id)
+    const scores = await SnipeRepository.getScores(snipe.id, leaderboard)
+
+    if (!scores) {
+      await interaction.editReply(smallEmbed("❌ ┃ Snipe not found"))
+
+      return
+    }
+
+    const plalistService = new PlaylistService(leaderboard)
+    const playlistContent = await plalistService.create(
+      snipe,
+      scores,
+      playerInfo,
+    )
     const attachment = new AttachmentBuilder(
       Buffer.from(JSON.stringify(playlistContent)),
       {
@@ -127,7 +132,12 @@ export default {
     )
 
     await interaction.editReply({
-      embeds: [{ color: 0xff0000, title: `✅ ┃ Snipe's playlist is ready` }],
+      embeds: [
+        {
+          color: EMBED_COLORS.primary,
+          title: `✅ ┃ Snipe's playlist is ready`,
+        },
+      ],
       files: [attachment],
     })
   },

@@ -1,15 +1,17 @@
-import Snipe from "@/controllers/snipe"
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import beatleader from "@/libs/beatleader"
-import scoresaber from "@/libs/scoresaber"
-import { PrismaClient } from "@prisma/client"
+import { PlayerRepository } from "@/repositories/player.repository"
+import { ScoreRepository } from "@/repositories/score.repository"
+import { SnipeRepository } from "@/repositories/snipe.repository"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
+import { SnipeService } from "@/services/snipe.service"
+import { LEADERBOARD } from "@/utils/contants"
 import {
   ChatInputCommandInteraction,
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
 
-const prisma = new PrismaClient()
 const cooldownAdd = new Set()
 const cooldownRefresh = new Set()
 const cooldownRemove = new Set()
@@ -33,8 +35,8 @@ export default {
             .setName("leaderboard")
             .setDescription("Leaderboard(s) where the snipe will be active")
             .addChoices(
-              { name: "scoresaber", value: "scoresaber" },
-              { name: "beatleader", value: "beatleader" },
+              { name: "scoresaber", value: LEADERBOARD.ScoreSaber },
+              { name: "beatleader", value: LEADERBOARD.BeatLeader },
               {
                 name: "scoresaber & beatleader",
                 value: "scoresaber,beatleader",
@@ -71,14 +73,7 @@ export default {
     const discordId = interaction.user.id
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
-    const sniper = await prisma.player.findFirst({
-      where: {
-        discordId,
-      },
-      select: {
-        id: true,
-      },
-    })
+    const sniper = await PlayerRepository.getByDiscordId(discordId)
 
     if (!sniper) {
       await interaction.editReply(
@@ -99,18 +94,10 @@ export default {
       return
     }
 
-    const snipe = await prisma.snipe.findFirst({
-      where: {
-        playerId,
-        sniperId: sniper.id,
-      },
-      select: {
-        id: true,
-        playerId: true,
-        sniperId: true,
-        leaderboard: true,
-      },
-    })
+    const snipe = await SnipeRepository.getByPlayerIdAndSniperID(
+      playerId,
+      sniper.id,
+    )
 
     switch (action) {
       case "add": {
@@ -146,11 +133,7 @@ export default {
           return
         }
 
-        const snipeTotal = await prisma.snipe.count({
-          where: {
-            sniperId: sniper.id,
-          },
-        })
+        const snipeTotal = await SnipeRepository.getTotal(sniper.id)
 
         if (snipeTotal >= 5) {
           await interaction.editReply(
@@ -162,9 +145,12 @@ export default {
           return
         }
 
-        if (leaderboard.includes("scoresaber")) {
-          const isPlayerExistSS = await scoresaber.getPlayerInfo(playerId)
-          const isSniperExistSS = await scoresaber.getPlayerInfo(sniper.id)
+        if (leaderboard.includes(LEADERBOARD.ScoreSaber)) {
+          const isPlayerExistSS =
+            await ScoreSaberService.getPlayerInfo(playerId)
+          const isSniperExistSS = await ScoreSaberService.getPlayerInfo(
+            sniper.id,
+          )
 
           if (!isPlayerExistSS) {
             await interaction.editReply(
@@ -183,9 +169,12 @@ export default {
           }
         }
 
-        if (leaderboard.includes("beatleader")) {
-          const isPlayerExistBL = await beatleader.getPlayerInfo(playerId)
-          const isSniperExistBL = await beatleader.getPlayerInfo(sniper.id)
+        if (leaderboard.includes(LEADERBOARD.BeatLeader)) {
+          const isPlayerExistBL =
+            await BeatLeaderService.getPlayerInfo(playerId)
+          const isSniperExistBL = await BeatLeaderService.getPlayerInfo(
+            sniper.id,
+          )
 
           if (!isPlayerExistBL) {
             await interaction.editReply(
@@ -209,7 +198,7 @@ export default {
             "<a:loading:1158674816136659006> ┃ Recovering player scores ...",
           ),
         )
-        await Snipe.add(sniper.id, playerId, leaderboard)
+        await SnipeService.add(sniper.id, playerId, leaderboard)
 
         await interaction.editReply(
           smallEmbed("✅ ┃ The player has been added to your list!"),
@@ -248,13 +237,14 @@ export default {
           ),
         )
 
-        await prisma.score.deleteMany({
-          where: {
-            snipeId: snipe.id,
-          },
-        })
+        await ScoreRepository.deleteScores(snipe.id)
 
-        await Snipe.add(sniper.id, snipe.playerId, snipe.leaderboard, snipe.id)
+        await SnipeService.add(
+          snipe.sniperId,
+          snipe.playerId,
+          snipe.leaderboard,
+          snipe.id,
+        )
 
         await interaction.editReply(
           smallEmbed("✅ ┃ The player scores has been refresh!"),
@@ -286,7 +276,7 @@ export default {
           return
         }
 
-        await Snipe.remove(snipe.id)
+        await SnipeService.delete(snipe.id)
         await interaction.editReply(
           smallEmbed("✅ ┃ The player has been removed from your list"),
         )

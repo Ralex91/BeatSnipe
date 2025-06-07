@@ -1,8 +1,10 @@
+import { EMBED_COLORS } from "@/utils/contants"
+
 export default function smallEmbed(text: string) {
   return {
     embeds: [
       {
-        color: 0xff0000,
+        color: EMBED_COLORS.primary,
         description: `**${text}**`,
       },
     ],

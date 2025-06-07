@@ -1,15 +1,14 @@
 import smallEmbed from "@/discord/handlers/smallEmbed"
-import Beatleader from "@/libs/beatleader"
-import Scoresaber from "@/libs/scoresaber"
-import { PrismaClient } from "@prisma/client"
+import { PlayerRepository } from "@/repositories/player.repository"
+import { BeatLeaderService } from "@/services/beatleader.service"
+import { ScoreSaberService } from "@/services/scoresaber.service"
+import { EMBED_COLORS } from "@/utils/contants"
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js"
-
-const prisma = new PrismaClient()
 
 export default {
   data: new SlashCommandBuilder()
@@ -31,11 +30,7 @@ export default {
       return
     }
 
-    const linked = await prisma.player.count({
-      where: {
-        discordId,
-      },
-    })
+    const linked = await PlayerRepository.getByDiscordId(discordId)
 
     if (linked) {
       await interaction.editReply(
@@ -45,8 +40,8 @@ export default {
       return
     }
 
-    const playerDataSS = await Scoresaber.getPlayerInfo(playerId)
-    const playerDataBL = await Beatleader.getPlayerInfo(playerId)
+    const playerDataSS = await ScoreSaberService.getPlayerInfo(playerId)
+    const playerDataBL = await BeatLeaderService.getPlayerInfo(playerId)
     const playerData = playerDataSS || playerDataBL
 
     if (!playerData) {
@@ -57,15 +52,10 @@ export default {
       return
     }
 
-    await prisma.player.create({
-      data: {
-        id: playerId,
-        discordId,
-      },
-    })
+    await PlayerRepository.add(playerId, discordId)
 
     const linkedEmbed = new EmbedBuilder()
-      .setColor("#4cd639")
+      .setColor(EMBED_COLORS.success)
       .setTitle(playerData.name)
       .setURL(playerData.url)
       .setThumbnail(playerData.avatar)
