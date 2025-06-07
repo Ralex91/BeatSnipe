@@ -8,7 +8,7 @@
 <h3 align="center">I'm a bot 🤖 that tracks the scores of the players you want to snipe to generate & auto-update playlists</h3>
 
 <p align="center">
-  <a href="https://beatsnipe.ralex.app/discord">
+  <a href="https://beatsnipe.ralex.app/api/discord">
     <img src="https://img.shields.io/badge/Join%20Discord%20Server-5865F2?style=for-the-badge&logo=discord&logoColor=white">
   </a>
 </p>
